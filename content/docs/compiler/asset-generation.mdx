@@ -1,0 +1,123 @@
+---
+title: 资产生成
+description: 从 .dsm / .dsh 到 UMaterial / UMaterialFunction 的生成流程。
+---
+
+DreamShaderLang 的编译目标是 Unreal 资产，而不是传统字节码或可执行文件。一次生成通常从 `.dsm` 开始，解析 import graph，生成材质节点、Custom 节点、材质函数和相关元数据。
+
+## 生成流程
+
+```text
+.dsm
+  ├─ import .dsh / Package
+  ├─ 解析顶层声明
+  ├─ 解析 Properties / Settings / Outputs / Graph
+  ├─ 生成或复用 UMaterial / UMaterialFunction
+  ├─ 清理旧表达式
+  ├─ 创建参数节点、UE.* 节点、Graph 节点和 Custom 节点
+  ├─ 连接输出
+  ├─ 应用 Settings
+  └─ 保存资产并写入源文件元数据
+```
+
+## `.dsm` 与 `.dsh`
+
+| 文件 | 生成行为 |
+| --- | --- |
+| `.dsm` | 可以生成 `UMaterial` 和 `UMaterialFunction`。 |
+| `.dsh` | 不直接生成资产，只作为共享依赖。 |
+
+保存 `.dsh` 时，DreamShader 会通过 import graph 找到受影响的 `.dsm` 并刷新。
+
+## 资产路径
+
+`Name` 使用 `Root` 下的相对 package 风格路径。`Root` 可省略，默认是 `Game`：
+
+```c
+Shader(Name="DreamMaterials/M_Sample", Root="Game")
+```
+
+生成：
+
+```text
+/Game/DreamMaterials/M_Sample.M_Sample
+```
+
+生成到项目内容插件时，使用 `Plugin.PluginName`：
+
+```c
+Shader(Name="DreamMaterials/M_Sample", Root="Plugin.MyPlugin")
+```
+
+生成：
+
+```text
+/MyPlugin/DreamMaterials/M_Sample.M_Sample
+```
+
+物理保存位置是：
+
+```text
+[Project]/Plugins/MyPlugin/Content/DreamMaterials/M_Sample.uasset
+```
+
+插件目标需要位于项目 `Plugins` 目录、已启用、可包含内容且存在 `Content` 目录，否则生成器会报错。
+
+如果同路径已有资产：
+
+| 情况 | 行为 |
+| --- | --- |
+| 已有 `UMaterial`，当前生成 `Shader` | 复用并更新。 |
+| 已有 `UMaterialFunction`，当前生成 `ShaderFunction` | 复用并更新。 |
+| 已有其他类型资产 | 报错，避免覆盖不兼容资产。 |
+
+## 节点生成
+
+| 语言元素 | Unreal 生成结果 |
+| --- | --- |
+| 标量 property | `UMaterialExpressionScalarParameter` |
+| 向量 property | `UMaterialExpressionVectorParameter` |
+| 纹理 property | `UMaterialExpressionTextureObjectParameter` |
+| `UE.TexCoord` | `UMaterialExpressionTextureCoordinate` |
+| `UE.Time` | `UMaterialExpressionTime` |
+| `UE.Panner` | `UMaterialExpressionPanner` |
+| 算术表达式 | Add / Subtract / Multiply / Divide 节点 |
+| Swizzle | ComponentMask / AppendVector |
+| `Function` 调用 | Custom 节点 |
+| `ShaderFunction` 调用 | MaterialFunctionCall 节点 |
+| `if` / `else` | Material If 节点 |
+
+## Function 生成
+
+普通 `Function`：
+
+```c
+Function ApplyTint(in vec3 color, in vec3 tint, out vec3 result) {
+    result = color * tint;
+}
+```
+
+生成行为：
+
+1. 函数代码写入生成 `.ush`。
+2. Graph 调用时创建 Custom 节点。
+3. Custom 节点 include 生成 `.ush`。
+4. Custom 节点调用 DreamShader 生成的安全函数符号。
+
+`SelfContained` / `Inline` 函数会尽量把依赖代码嵌入 Custom 节点。
+
+## Source hash 缓存
+
+生成资产会写入元数据：
+
+```text
+DreamShader.SourceFile
+DreamShader.SourceHash
+DreamShader.GeneratedAtUtc
+```
+
+如果源文件 hash 没变化，生成器可以跳过重复生成。这让保存、扫描和全量重编更轻。
+
+## 材质重置
+
+更新已有材质时，DreamShader 会清理旧表达式并重置常见材质属性，再根据当前 `Settings` 重新应用。这样删除某个旧 setting 后，不容易留下资产上的历史状态。

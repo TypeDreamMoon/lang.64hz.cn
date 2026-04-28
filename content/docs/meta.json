@@ -1,0 +1,14 @@
+{
+  "title": "DreamShaderLang",
+  "pages": [
+    "index",
+    "getting-started",
+    "syntax",
+    "reference",
+    "examples",
+    "compiler",
+    "dreamshader",
+    "workflows",
+    "shader-languages"
+  ]
+}

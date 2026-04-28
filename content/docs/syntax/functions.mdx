@@ -1,0 +1,144 @@
+---
+title: Function 与 helper
+description: HLSL 风格 helper 的声明、调用、输出和自包含模式。
+---
+
+`Function` 是 DreamShaderLang 的 helper 层。它让复杂计算留在 HLSL 风格代码里，而不是强行把所有逻辑展开成 Graph 节点。
+
+## 基本声明
+
+```c
+Function ApplyTint(in vec3 color, in vec3 tint, out vec3 result) {
+    result = color * tint;
+}
+```
+
+函数头：
+
+```text
+Function [SelfContained|Inline] Name(parameter-list) { body }
+```
+
+参数：
+
+```text
+in Type name
+out Type name
+```
+
+至少需要一个 `out` 参数。
+
+## 多输出
+
+```c
+Function SplitBrightness(in vec3 color, out vec3 normalized, out float brightness) {
+    brightness = max(max(color.r, color.g), color.b);
+    normalized = color / max(brightness, 0.0001);
+}
+```
+
+调用：
+
+```c
+Graph = {
+    vec3 normalized;
+    float brightness;
+
+    SplitBrightness(Tint, normalized, brightness);
+}
+```
+
+DreamShader 会为第一个 `out` 创建 Custom 节点主输出，为后续 `out` 创建 Additional Output。
+
+## 纹理参数
+
+```c
+Namespace(Name="Texture")
+{
+    Function Sample2DRGB(in Texture2D texture, in float2 uv, out float3 color) {
+        color = Texture2DSample(texture, textureSampler, uv).rgb;
+    }
+}
+```
+
+当 `Texture2D` 作为 Custom 节点输入时，生成器会处理对应 sampler 命名。函数体里常见写法是 `textureSampler`。
+
+## 普通函数与自包含函数
+
+普通函数：
+
+```c
+Function Remap01(in float value, out float result) {
+    result = saturate(value * 0.5 + 0.5);
+}
+```
+
+生成行为：
+
+| 行为 | 说明 |
+| --- | --- |
+| `.ush` | 生成 helper include 文件。 |
+| Custom 节点 | 通过 include 调用生成的函数符号。 |
+| 适合 | 当前项目持续使用 DreamShader。 |
+
+自包含函数：
+
+```c
+Function SelfContained Remap01(in float value, out float result) {
+    result = saturate(value * 0.5 + 0.5);
+}
+```
+
+生成行为：
+
+| 行为 | 说明 |
+| --- | --- |
+| 嵌入代码 | 把需要的 helper 代码写入 Custom 节点。 |
+| include | 尽量减少对生成 `.ush` 的依赖。 |
+| 适合 | 需要把生成材质迁移到未安装 DreamShader 的项目。 |
+
+`Inline` 与 `SelfContained` 等价：
+
+```c
+Function Inline Remap01(in float value, out float result) {
+    result = saturate(value * 0.5 + 0.5);
+}
+```
+
+## 命名空间函数
+
+```c
+Namespace(Name="Color")
+{
+    Function ApplyTint(in vec3 color, in vec3 tint, out vec3 result) {
+        result = color * tint;
+    }
+}
+```
+
+调用：
+
+```c
+Color::ApplyTint(BaseColor, Tint, ColorOut);
+```
+
+命名空间函数在内部会被转换成安全符号，避免 HLSL 里直接使用 `::`。
+
+## 设计建议
+
+| 场景 | 建议 |
+| --- | --- |
+| 简单节点连接 | 写在 `Graph`。 |
+| 多处复用公式 | 写成 `Function`。 |
+| 循环和复杂流程 | 写成 `Function`。 |
+| 面向团队共享 | 放进 `.dsh` 或 Package。 |
+| 命名可能冲突 | 放进 `Namespace`。 |
+
+## 常见错误
+
+| 错误 | 原因 |
+| --- | --- |
+| `Function ... must declare at least one out parameter` | 没有声明 `out` 参数。 |
+| `currently uses positional arguments only` | 普通 `Function` 调用使用了命名参数。 |
+| `out argument must be a plain variable name` | `out` 位置传了表达式，而不是变量名。 |
+| `must be called with explicit out variables` | 把 `Function` 当返回值函数使用。 |

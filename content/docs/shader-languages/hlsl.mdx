@@ -1,0 +1,111 @@
+---
+title: HLSL 简介
+description: 面向 DreamShaderLang 用户的 HLSL 语法、类型和关键字速览。
+---
+
+HLSL 是 DirectX / Unreal 材质体系中常见的着色语言。DreamShaderLang 的 `Function` 函数体采用 HLSL 风格代码，因此写 helper 时会经常用到 HLSL 的类型、函数和控制流。
+
+## 基本形态
+
+```hlsl
+float3 ApplyTint(float3 color, float3 tint)
+{
+    return color * tint;
+}
+```
+
+DreamShaderLang 中不会直接写这种返回值函数签名，而是写成显式 `out` 参数：
+
+```c
+Function ApplyTint(in vec3 color, in vec3 tint, out vec3 result) {
+    result = color * tint;
+}
+```
+
+## 常用类型
+
+| 类型 | 说明 |
+| --- | --- |
+| `float` | 32 位浮点标量。 |
+| `half` | 半精度浮点，常用于移动端或较低精度计算。 |
+| `int` / `uint` | 有符号 / 无符号整数。 |
+| `bool` | 布尔值。 |
+| `float2` / `float3` / `float4` | 2/3/4 分量向量。 |
+| `float3x3` / `float4x4` | 矩阵。 |
+| `Texture2D` | 2D 纹理对象。 |
+| `SamplerState` | 采样器。 |
+
+DreamShaderLang 允许在很多地方写 `vec2` / `vec3` / `vec4`，生成 helper 时会规范化成 HLSL 风格类型。
+
+## 变量和表达式
+
+```hlsl
+float value = 0.5;
+float3 color = float3(1.0, 0.2, 0.1);
+float luminance = dot(color, float3(0.2126, 0.7152, 0.0722));
+```
+
+常用运算符：
+
+| 运算符 | 说明 |
+| --- | --- |
+| `+` / `-` | 加减。 |
+| `*` / `/` | 乘除。 |
+| `>` / `<` / `>=` / `<=` | 比较。 |
+| `==` / `!=` | 相等 / 不等。 |
+| `&&` / `||` / `!` | 逻辑与 / 或 / 非。 |
+
+## 控制流
+
+```hlsl
+if (mask > 0.5)
+{
+    result = a;
+}
+else
+{
+    result = b;
+}
+
+for (int i = 0; i < 4; ++i)
+{
+    result += weights[i];
+}
+```
+
+在 DreamShaderLang 里，复杂控制流建议放进 `Function`。`Graph` 只支持基础 `if` / `else`，不支持 `for` / `while`。
+
+## 常用内建函数
+
+| 函数 | 说明 |
+| --- | --- |
+| `sin` / `cos` / `tan` | 三角函数。 |
+| `min` / `max` / `clamp` | 范围处理。 |
+| `saturate` | 把值限制到 `0..1`。 |
+| `lerp` | 线性插值。 |
+| `dot` | 点积。 |
+| `cross` | 叉积。 |
+| `normalize` | 归一化向量。 |
+| `length` | 向量长度。 |
+| `pow` / `sqrt` | 幂和平方根。 |
+| `abs` / `floor` / `ceil` / `frac` | 数值处理。 |
+
+## 常见关键字
+
+| 分类 | 关键字 |
+| --- | --- |
+| 类型 | `float`, `half`, `int`, `uint`, `bool`, `void` |
+| 控制流 | `if`, `else`, `for`, `while`, `do`, `switch`, `case`, `break`, `continue`, `return` |
+| 参数 | `in`, `out`, `inout` |
+| 常量与修饰 | `const`, `static`, `uniform` |
+| 采样相关 | `Texture2D`, `TextureCube`, `SamplerState` |
+
+## 与 DreamShaderLang 的关系
+
+| HLSL 概念 | DreamShaderLang 中的位置 |
+| --- | --- |
+| helper 函数体 | `Function ... { ... }` |
+| 材质节点连接 | `Graph = { ... }` |
+| 纹理对象参数 | `Properties` 或 `Function` 参数 |
+| 复杂循环 | `Function` |
+| 资产生成 | `Shader` / `ShaderFunction` |

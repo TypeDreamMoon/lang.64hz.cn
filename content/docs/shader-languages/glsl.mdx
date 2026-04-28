@@ -1,0 +1,92 @@
+---
+title: GLSL 简介
+description: GLSL 语法、向量类型和与 DreamShaderLang 的对应关系。
+---
+
+GLSL 是 OpenGL / Vulkan 生态常见的着色语言。DreamShaderLang 不是 GLSL 编译器，但支持 `vec2` / `vec3` / `vec4` 等 GLSL 风格别名，方便有 GLSL 经验的用户迁移材质逻辑。
+
+## 基本形态
+
+```glsl
+vec3 applyTint(vec3 color, vec3 tint)
+{
+    return color * tint;
+}
+```
+
+在 DreamShaderLang 中，等价 helper 通常写成：
+
+```c
+Function ApplyTint(in vec3 color, in vec3 tint, out vec3 result) {
+    result = color * tint;
+}
+```
+
+## 常用类型
+
+| GLSL 类型 | 说明 | DreamShaderLang 对应 |
+| --- | --- | --- |
+| `float` | 浮点标量 | `float` |
+| `int` | 整数标量 | `int` |
+| `uint` | 无符号整数 | `uint` |
+| `bool` | 布尔值 | `bool` |
+| `vec2` / `vec3` / `vec4` | 浮点向量 | `float2` / `float3` / `float4` |
+| `ivec2` / `ivec3` / `ivec4` | 整数向量 | `int2` / `int3` / `int4` |
+| `uvec2` / `uvec3` / `uvec4` | 无符号整数向量 | `uint2` / `uint3` / `uint4` |
+| `bvec2` / `bvec3` / `bvec4` | 布尔向量 | `bool2` / `bool3` / `bool4` |
+| `mat2` / `mat3` / `mat4` | 矩阵 | helper 中可规范化为 HLSL 矩阵类型 |
+
+## 构造器和 swizzle
+
+```glsl
+vec2 uv = vec2(0.5, 0.5);
+vec3 color = vec3(1.0, 0.2, 0.1);
+float r = color.r;
+vec2 rg = color.rg;
+vec3 bgr = color.bgr;
+```
+
+DreamShaderLang 的 `Graph` 也支持类似构造和 swizzle：
+
+```c
+Graph = {
+    vec3 color = vec3(1.0, 0.2, 0.1);
+    float r = color.r;
+    vec2 rg = color.rg;
+}
+```
+
+## 常用函数
+
+| GLSL 函数 | 说明 |
+| --- | --- |
+| `mix` | 线性插值，HLSL 中常见对应是 `lerp`。 |
+| `clamp` | 限制范围。 |
+| `smoothstep` | 平滑阶跃。 |
+| `step` | 阶跃函数。 |
+| `dot` / `cross` | 点积 / 叉积。 |
+| `normalize` | 归一化。 |
+| `length` / `distance` | 长度 / 距离。 |
+| `fract` | 小数部分，HLSL 中常见对应是 `frac`。 |
+
+在 DreamShaderLang 的 `Function` 中，最终由 Unreal/HLSL 环境编译，因此更推荐使用 HLSL 可用函数名，例如 `lerp`、`frac`、`saturate`。
+
+## 常见关键字
+
+| 分类 | 关键字 |
+| --- | --- |
+| 类型 | `float`, `int`, `uint`, `bool`, `void`, `vec2`, `vec3`, `vec4`, `mat3`, `mat4` |
+| 控制流 | `if`, `else`, `for`, `while`, `do`, `switch`, `case`, `break`, `continue`, `return` |
+| 修饰 | `const`, `in`, `out`, `inout`, `uniform` |
+| Shader 阶段 | `attribute`, `varying`, `layout` |
+| 精度 | `lowp`, `mediump`, `highp` |
+
+## 与 DreamShaderLang 的关系
+
+| GLSL 习惯 | DreamShaderLang 建议 |
+| --- | --- |
+| 使用 `vec3` / `vec4` | 可以继续使用，语言会映射到 HLSL 风格类型。 |
+| 使用 `mix` | 在 `Function` 中优先改为 `lerp`。 |
+| 使用 `fract` | 在 `Function` 中优先改为 `frac`。 |
+| 写 shader main | 不需要，DreamShaderLang 通过 `Shader` / `Graph` 描述材质。 |
+| sampler2D 采样 | 使用 DreamShaderLang 的纹理 property 和 HLSL 风格采样 helper。 |

@@ -1,0 +1,162 @@
+---
+title: 配方
+description: 可组合的 DreamShaderLang 材质片段。
+---
+
+## 时间脉冲
+
+```c
+Graph = {
+    float t = UE.Time();
+    float pulse = UE.Expression(
+        Class="Sine",
+        OutputType="float1",
+        Input=t);
+
+    Color = Tint * (pulse * 0.5 + 0.5);
+}
+```
+
+## UV 平移
+
+```c
+Graph = {
+    vec2 uv = UE.TexCoord(Index=0);
+    float t = UE.Time();
+    vec2 moved = UE.Panner(Coordinate=uv, Time=t, SpeedX=0.1, SpeedY=0.0);
+}
+```
+
+## 条件着色
+
+```c
+Graph = {
+    vec2 uv = UE.TexCoord(Index=0);
+    float mask = UE.Expression(
+        Class="ComponentMask",
+        OutputType="float1",
+        Input=uv,
+        R=true);
+
+    if (mask > 0.5) {
+        Color = vec3(1.0, 0.2, 0.2);
+    } else {
+        Color = vec3(0.0, 0.0, 0.0);
+    }
+}
+```
+
+## 透明 UI 材质
+
+```c
+Shader(Name="DreamMaterials/M_UI_Transparent")
+{
+    Properties = {
+        vec3 Tint = vec3(1.0, 1.0, 1.0);
+        float Alpha = 0.75;
+    }
+
+    Settings = {
+        Domain = "UI";
+        ShadingModel = "Unlit";
+        BlendMode = "Translucent";
+    }
+
+    Outputs = {
+        vec3 Color;
+        float OpacityValue;
+
+        Base.EmissiveColor = Color;
+        Base.Opacity = OpacityValue;
+    }
+
+    Graph = {
+        Color = Tint;
+        OpacityValue = Alpha;
+    }
+}
+```
+
+## Surface PBR 骨架
+
+```c
+Shader(Name="DreamMaterials/M_Surface_PBR")
+{
+    Properties = {
+        vec3 BaseTint = vec3(0.8, 0.6, 0.4);
+        float Rough = 0.5;
+        float Metal = 0.0;
+    }
+
+    Settings = {
+        Domain = "Surface";
+        BlendMode = "Opaque";
+        ShadingModel = "DefaultLit";
+    }
+
+    Outputs = {
+        vec3 Base;
+        float RoughnessValue;
+        float MetallicValue;
+
+        Base.BaseColor = Base;
+        Base.Roughness = RoughnessValue;
+        Base.Metallic = MetallicValue;
+    }
+
+    Graph = {
+        Base = BaseTint;
+        RoughnessValue = Rough;
+        MetallicValue = Metal;
+    }
+}
+```
+
+## 自定义 MaterialExpression 输出
+
+```c
+Graph = {
+    vec2 uv = UE.TexCoord(Index=0);
+    float r = UE.Expression(
+        Class="ComponentMask",
+        OutputType="float1",
+        Input=uv,
+        R=true);
+
+    Color = vec3(r, r, r);
+}
+```
+
+## 多输出 helper
+
+```c
+Function SplitBrightness(in vec3 color, out vec3 normalized, out float brightness) {
+    brightness = max(max(color.r, color.g), color.b);
+    normalized = color / max(brightness, 0.0001);
+}
+
+Shader(Name="DreamMaterials/M_Brightness")
+{
+    Properties = {
+        vec3 Tint = vec3(1.0, 0.5, 0.25);
+    }
+
+    Settings = {
+        Domain = "UI";
+        ShadingModel = "Unlit";
+    }
+
+    Outputs = {
+        vec3 Color;
+        Base.EmissiveColor = Color;
+    }
+
+    Graph = {
+        vec3 normalized;
+        float brightness;
+
+        SplitBrightness(Tint, normalized, brightness);
+        Color = normalized * brightness;
+    }
+}
+```

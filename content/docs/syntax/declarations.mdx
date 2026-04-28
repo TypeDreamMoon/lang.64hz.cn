@@ -1,0 +1,190 @@
+---
+title: 顶层声明
+description: Shader、ShaderFunction、Function 和 Namespace 的完整结构。
+---
+
+顶层声明决定当前文件生成什么、暴露什么、复用什么。
+
+## `Shader`
+
+`Shader` 生成 `UMaterial`。
+
+```c
+Shader(Name="DreamMaterials/M_Sample", Root="Game")
+{
+    Properties = {
+        float Strength = 1.0;
+    }
+
+    Settings = {
+        Domain = "UI";
+        ShadingModel = "Unlit";
+    }
+
+    Outputs = {
+        vec3 Color;
+        Base.EmissiveColor = Color;
+    }
+
+    Graph = {
+        Color = vec3(Strength, Strength, Strength);
+    }
+}
+```
+
+规则：
+
+| 项目 | 规则 |
+| --- | --- |
+| `Name` | 必填，解析为 `Root` 下的相对资产路径。 |
+| `Root` | 可选，默认 `Game`。支持 `Game`、`Plugin.PluginName`，也可追加子目录，例如 `Game/Generated`；`Plugin.PluginName` 指向 `[Project]/Plugins/PluginName/Content`。 |
+| `Graph` | 必填。没有 `Graph` 会报错。 |
+| `Outputs` | 强烈建议显式提供；没有输出绑定时无法得到有效材质输出。 |
+| `Code` | 不再作为 `Shader` section 使用，必须改为 `Graph`。 |
+
+## `ShaderFunction`
+
+`ShaderFunction` 生成 `UMaterialFunction`。
+
+```c
+ShaderFunction(Name="Functions/F_Tint", Root="Plugin.MyPlugin")
+{
+    Inputs = {
+        vec3 InColor;
+        vec3 InTint;
+    }
+
+    Outputs = {
+        vec3 OutColor;
+    }
+
+    Settings = {
+        Description = "Tint helper";
+        ExposeToLibrary = true;
+        LibraryCategories = "DreamShader,Color";
+    }
+
+    Graph = {
+        OutColor = InColor * InTint;
+    }
+}
+```
+
+规则：
+
+| 项目 | 规则 |
+| --- | --- |
+| `Name` | 必填，生成 `UMaterialFunction` 的资产路径。 |
+| `Root` | 可选，规则同 `Shader`。 |
+| `Inputs` | 输入 pin 声明。 |
+| `Outputs` | 输出 pin 声明。 |
+| `Graph` | 材质函数内部图。 |
+| `Settings` | 支持材质函数元数据，例如说明和库分类。 |
+
+## `Function`
+
+`Function` 定义可复用 HLSL helper。它不会生成 Unreal 资产，而是供 `Graph` 创建 Custom 节点调用。
+
+```c
+Function ApplyTint(in vec3 color, in vec3 tint, out vec3 result) {
+    result = color * tint;
+}
+```
+
+参数规则：
+
+| 参数限定符 | 含义 |
+| --- | --- |
+| `in` | 输入参数。 |
+| `out` | 输出参数，调用时必须传变量名。 |
+
+至少需要一个 `out` 参数：
+
+```c
+Function GetPair(in float x, out float a, out float b) {
+    a = x;
+    b = x * x;
+}
+```
+
+调用：
+
+```c
+Graph = {
+    float a;
+    float b;
+    GetPair(2.0, a, b);
+}
+```
+
+DreamShaderLang 的 `Function` 不支持返回值风格调用：
+
+```c
+// 不支持
+float value = GetPair(2.0);
+```
+
+## `SelfContained` 与 `Inline`
+
+普通 `Function` 会生成 `.ush` include，并由 Custom 节点引用。
+
+```c
+Function Remap01(in float value, out float result) {
+    result = saturate(value * 0.5 + 0.5);
+}
+```
+
+自包含函数会把依赖代码嵌入 Custom 节点：
+
+```c
+Function SelfContained Remap01(in float value, out float result) {
+    result = saturate(value * 0.5 + 0.5);
+}
+```
+
+`Inline` 是 `SelfContained` 的别名：
+
+```c
+Function Inline Remap01(in float value, out float result) {
+    result = saturate(value * 0.5 + 0.5);
+}
+```
+
+适合场景：
+
+| 模式 | 适合 |
+| --- | --- |
+| 普通 `Function` | 项目内持续使用 DreamShader，代码集中生成到 `.ush`。 |
+| `SelfContained` / `Inline` | 需要把生成资产交给未安装 DreamShader 的项目使用。 |
+
+## `Namespace`
+
+`Namespace` 用来组织一组 `Function`。
+
+```c
+Namespace(Name="Texture")
+{
+    Function Sample2DRGB(in Texture2D texture, in float2 uv, out float3 color) {
+        color = Texture2DSample(texture, textureSampler, uv).rgb;
+    }
+}
+```
+
+调用：
+
+```c
+Graph = {
+    vec2 uv = UE.TexCoord(Index=0);
+    vec3 sampled;
+    Texture::Sample2DRGB(MainTex, uv, sampled);
+}
+```
+
+规则：
+
+| 项目 | 规则 |
+| --- | --- |
+| `Name` | 必填，必须是合法标识符。 |
+| 内容 | 当前只能包含 `Function`。 |
+| 调用 | 使用 `NamespaceName::FunctionName(...)`。 |
+| 生成 | 内部会映射为安全的 HLSL 符号名，避免原生 `::` 问题。 |

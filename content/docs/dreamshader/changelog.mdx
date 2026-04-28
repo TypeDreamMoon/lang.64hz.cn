@@ -1,0 +1,74 @@
+---
+title: ChangeLog
+description: DreamShader 插件版本更新记录。
+---
+
+DreamShader 的版本更新记录按插件版本整理。这里主要记录会影响使用者的语言、生成器、工作流和兼容性变化。
+
+## 1.1.3 - 2026-04-28
+
+### 资产生成
+
+- 明确 `Root="Plugin.PluginName"` 只指向已启用的项目内容插件。
+- `Plugin.MoonToon` 会解析到 UE package 根 `/MoonToon`，物理保存位置是 `[Project]/Plugins/MoonToon/Content`。
+- 生成器会校验目标插件位于项目 `Plugins` 目录、已启用、可包含内容且存在 `Content` 目录。
+
+## 1.1.2 - 2026-04-28
+
+### 语言与生成
+
+- `Shader` 和 `ShaderFunction` 顶层属性新增 `Root`，用于指定生成资产根路径。
+- `Root` 默认是 `Game`，也支持 `Plugin.PluginName`，用于把生成的 `UMaterial` 或 `UMaterialFunction` 保存到已启用的项目内容插件根。
+- `ShaderFunction` 在 `Graph` 中被调用时，会按该函数自己的 `Root` 解析并加载生成的 `UMaterialFunction` 资产。
+
+### 文档
+
+- 更新插件 README、语言参考和网站文档中的资产生成说明。
+
+## 1.1.1 - 2026-04-26
+
+### 修复
+
+- 修复 `Graph` 中调用带多个 `out` 参数的 `Function` 时，Custom 节点后续输出 pin 没有收到值的问题。
+- 多输出 `Function` 的第一个 `out` 仍通过 Custom 节点主 `return` 输出；第二个及后续 `out` 现在会生成显式赋值，把 `__ds_*_outN` 临时变量写回对应 Additional Output 参数，例如 `Output_ToonA = __ds_xxx_out1;`。
+
+### 兼容性
+
+- 这是一个 patch 版本，不需要修改 `.dsm` / `.dsh` 写法。
+
+## 1.1.0 - 2026-04-22
+
+### 语言与 Graph
+
+- 将材质和材质函数中的 `Code = { ... }` 区块重命名为 `Graph = { ... }`，让图 DSL 与 HLSL helper 层更容易区分。
+- `Graph` 增加基础 `if` / `else` 支持，可以在图层表达简单条件分支。
+- 改进输出表达式处理：输出绑定从只记录变量名改为记录 source text，可用于更灵活地解析 Graph 输出。
+- 增强类型转换和 `UE.*` 通用 MaterialExpression 参数处理，减少手动补节点时的摩擦。
+
+### Function 与生成
+
+- 新增 `Function SelfContained` / `Function Inline`，可以把 helper 依赖嵌入 Custom 节点，便于把生成材质交给未安装 DreamShader 插件的项目使用。
+- 普通 `Function` 继续生成 `.ush` helper include，并通过 Custom 节点引用。
+- 增加清理生成 shader 文件的工作流，减少历史 include 残留。
+
+### Package 与工作流
+
+- 新增 Package 系统，用 GitHub 分发和安装可复用 `.dsh` 共享库。
+- 增加 import dependency graph，保存共享 `.dsh` 后可以找到受影响的 `.dsm` 并增量刷新。
+- 缓存配置目录，减少重复解析项目设置带来的开销。
+
+### 诊断与兼容性
+
+- 诊断信息增加 stage、platform、quality 等上下文，便于区分解析、生成和材质编译阶段的问题。
+- 移除 Toon shading model 的默认映射，避免生成结果意外依赖项目自定义 shading model。
+- 配套更新 README、语言参考和示例文档。
+
+## 1.0.0 - 2026-04-21
+
+### 初始版本
+
+- 提供 `.dsm` / `.dsh` 文件模型，用文本源文件描述 Unreal 材质和共享 helper。
+- 支持 `Shader(Name="...")` 生成 `UMaterial`，支持 `ShaderFunction(Name="...")` 生成 `UMaterialFunction`。
+- 支持 `Properties`、`Settings`、`Outputs` 和早期图构建语法。
+- 支持 HLSL 风格 `Function` helper，并生成 Custom 节点代码。
+- 支持基础文档和示例，作为 DreamShaderLang 的第一版公开基线。

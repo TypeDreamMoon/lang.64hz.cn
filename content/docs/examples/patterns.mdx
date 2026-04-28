@@ -1,0 +1,148 @@
+---
+title: 常用模式
+description: 最小材质、共享头文件、Package、Function、UE 节点和 ShaderFunction 示例。
+---
+
+这些片段按常见工作流排列，可以直接复制到 `.dsm` / `.dsh` 中改名使用。
+
+## 最小 UI 材质
+
+```c
+Shader(Name="DreamMaterials/M_Minimal")
+{
+    Properties = {
+        vec3 Tint = vec3(1.0, 0.2, 0.2);
+    }
+
+    Settings = {
+        Domain = "UI";
+        ShadingModel = "Unlit";
+    }
+
+    Outputs = {
+        vec3 Color;
+        Base.EmissiveColor = Color;
+    }
+
+    Graph = {
+        Color = Tint;
+    }
+}
+```
+
+## 共享 `.dsh`
+
+`DShader/Shared/Common.dsh`：
+
+```c
+Namespace(Name="Common")
+{
+    Function BuildPulse(in float t, in vec2 uv, out vec3 result) {
+        vec2 p = uv - 0.5;
+        float ring = sin(t * 2.0 + length(p) * 12.0) * 0.5 + 0.5;
+        result = vec3(ring, ring * 0.5 + 0.1, 1.0 - ring * 0.35);
+    }
+
+    Function ApplyTint(in vec3 color, in vec3 tint, out vec3 result) {
+        result = color * tint;
+    }
+}
+```
+
+## 在 `.dsm` 中引入 `.dsh`
+
+```c
+import "Shared/Common.dsh";
+
+Shader(Name="DreamMaterials/M_Imported")
+{
+    Properties = {
+        vec3 Tint = vec3(1.0, 1.0, 1.0);
+    }
+
+    Settings = {
+        Domain = "UI";
+        ShadingModel = "Unlit";
+    }
+
+    Outputs = {
+        vec3 Color;
+        Base.EmissiveColor = Color;
+    }
+
+    Graph = {
+        vec2 uv = UE.TexCoord(Index=0);
+        float t = UE.Time();
+        vec3 pulse;
+
+        Common::BuildPulse(t, uv, pulse);
+        Common::ApplyTint(pulse, Tint, Color);
+    }
+}
+```
+
+## Package 纹理采样
+
+```c
+import "@typedreammoon/dreamshader-texture/Library/Texture.dsh";
+
+Shader(Name="DreamMaterials/M_TexturePackage")
+{
+    Properties = {
+        Texture2D MainTex = Path(Engine, "/EngineResources/DefaultTexture");
+        vec3 Tint = vec3(1.0, 1.0, 1.0);
+    }
+
+    Settings = {
+        Domain = "UI";
+        ShadingModel = "Unlit";
+    }
+
+    Outputs = {
+        vec3 Color;
+        Base.EmissiveColor = Color;
+    }
+
+    Graph = {
+        vec2 uv = UE.TexCoord(Index=0);
+        vec3 sampled;
+
+        Texture::Sample2DRGB(MainTex, uv, sampled);
+        Color = sampled * Tint;
+    }
+}
+```
+
+## `SelfContained` 函数
+
+```c
+Function SelfContained Remap01(in float value, out float result) {
+    result = saturate(value * 0.5 + 0.5);
+}
+```
+
+## `ShaderFunction`
+
+```c
+ShaderFunction(Name="Functions/F_Tint")
+{
+    Inputs = {
+        vec3 InColor;
+        vec3 InTint;
+    }
+
+    Outputs = {
+        vec3 OutColor;
+    }
+
+    Settings = {
+        Description = "Tint helper";
+        ExposeToLibrary = true;
+        LibraryCategories = "DreamShader,Color";
+    }
+
+    Graph = {
+        OutColor = InColor * InTint;
+    }
+}
+```

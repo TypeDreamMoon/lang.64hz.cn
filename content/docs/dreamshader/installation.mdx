@@ -1,0 +1,69 @@
+---
+title: 安装插件
+description: 在 Unreal 项目中添加 DreamShader 插件并准备语言源目录。
+---
+
+DreamShader 作为 Unreal 项目插件使用。安装后，项目可以识别 `.dsm` / `.dsh` 源文件，并在保存或手动重编时生成材质资产。
+
+## 获取插件
+
+公开仓库：
+
+[https://github.com/TypeDreamMoon/DreamShader](https://github.com/TypeDreamMoon/DreamShader)
+
+可以通过 Git 克隆或下载源码包，再放入 Unreal 项目的插件目录。目录名建议保持为 `DreamShader`，便于团队成员和文档统一。
+
+## 启用流程
+
+1. 将插件加入 Unreal 项目。
+2. 在 Unreal Editor 的插件面板中启用 DreamShader。
+3. 重启 Unreal Editor。
+4. 创建 DreamShaderLang 源目录，默认名称为 `DShader`。
+5. 创建 `.dsm` 或 `.dsh` 源文件。
+6. 保存源文件或使用 VSCode 扩展命令触发重编。
+
+## 项目设置
+
+打开 `Project Settings > Plugins > DreamShader` 可以看到插件配置。
+
+| 设置 | 说明 |
+| --- | --- |
+| `SourceDirectory` | DreamShaderLang 源文件根目录，默认使用 `DShader`。 |
+| `GeneratedShaderDirectory` | 普通 `Function` 生成 helper include 的目录，可按项目需要配置。 |
+| `AutoCompileOnSave` | 保存源文件时是否自动刷新资产。 |
+| `SaveDebounceSeconds` | 保存防抖时间，避免连续保存触发过多编译。 |
+| `VerboseLogs` | 输出更详细日志，适合排错。 |
+
+## 验证安装
+
+创建一个最小 `.dsm`：
+
+```c
+Shader(Name="DreamMaterials/M_InstallCheck")
+{
+    Settings = {
+        Domain = "UI";
+        ShadingModel = "Unlit";
+    }
+
+    Outputs = {
+        vec3 Color;
+        Base.EmissiveColor = Color;
+    }
+
+    Graph = {
+        Color = vec3(0.2, 0.6, 1.0);
+    }
+}
+```
+
+保存后，如果项目中生成了对应 `UMaterial`，说明插件编译链路正常。
+
+## 注意事项
+
+| 项目 | 建议 |
+| --- | --- |
+| 源文件 | 把 `.dsm` / `.dsh` 纳入版本管理。 |
+| 生成资产 | 视项目策略决定是否提交。 |
+| 共享库 | 推荐通过 Package 或项目共享 `.dsh` 管理。 |
+| 错误定位 | 先看 VSCode 诊断，再看 Unreal Output Log。 |

@@ -1,0 +1,62 @@
+---
+title: 关键字速查
+description: DreamShaderLang、HLSL 与 GLSL 常见关键字对照。
+---
+
+这一页是速查表。DreamShaderLang 自己的关键字较少，复杂计算主要借用 HLSL 风格 helper；GLSL 关键字主要用于迁移时对照。
+
+## DreamShaderLang
+
+| 分类 | 关键字 / 标识 |
+| --- | --- |
+| 顶层声明 | `Shader`, `ShaderFunction`, `Function`, `Namespace`, `import` |
+| 函数模式 | `SelfContained`, `Inline` |
+| Section | `Properties`, `Inputs`, `Outputs`, `Settings`, `Graph` |
+| 参数限定 | `in`, `out` |
+| Graph 控制流 | `if`, `else` |
+| Unreal 节点入口 | `UE.*`, `UE.Expression(...)` |
+| 资产路径 helper | `Path(...)` |
+| 输出绑定 | `Base.*`, `Expression(...).Pin[n]` |
+
+## DreamShaderLang 常用类型
+
+| 类型族 | 类型 |
+| --- | --- |
+| 标量 | `float`, `float1`, `half`, `half1`, `int`, `uint`, `bool` |
+| 向量 | `float2`, `float3`, `float4`, `half2`, `half3`, `half4` |
+| 整数向量 | `int2`, `int3`, `int4`, `uint2`, `uint3`, `uint4` |
+| 布尔向量 | `bool2`, `bool3`, `bool4` |
+| GLSL 别名 | `vec2`, `vec3`, `vec4`, `ivec2`, `uvec2`, `bvec2` 等 |
+| 纹理 | `Texture2D`, `TextureCube`, `Texture2DArray`, `SamplerState` |
+
+## HLSL 常见关键字
+
+| 分类 | 关键字 |
+| --- | --- |
+| 类型 | `void`, `bool`, `int`, `uint`, `half`, `float`, `double` |
+| 控制流 | `if`, `else`, `for`, `while`, `do`, `switch`, `case`, `default` |
+| 跳转 | `return`, `break`, `continue`, `discard` |
+| 参数 | `in`, `out`, `inout` |
+| 修饰 | `const`, `static`, `uniform`, `groupshared` |
+| 纹理 | `Texture2D`, `TextureCube`, `SamplerState`, `SamplerComparisonState` |
+
+## GLSL 常见关键字
+
+| 分类 | 关键字 |
+| --- | --- |
+| 类型 | `void`, `bool`, `int`, `uint`, `float`, `double`, `vec2`, `vec3`, `vec4`, `mat3`, `mat4` |
+| 控制流 | `if`, `else`, `for`, `while`, `do`, `switch`, `case`, `default` |
+| 跳转 | `return`, `break`, `continue`, `discard` |
+| 参数 | `in`, `out`, `inout` |
+| 修饰 | `const`, `uniform`, `layout`, `centroid`, `flat`, `smooth` |
+| 精度 | `lowp`, `mediump`, `highp` |
+
+## 迁移提醒
+
+| 从 GLSL 来 | 在 DreamShaderLang / HLSL 中 |
+| --- | --- |
+| `vec3` | 可以继续写 `vec3`，也可以写 `float3`。 |
+| `mix(a, b, t)` | 用 `lerp(a, b, t)`。 |
+| `fract(x)` | 用 `frac(x)`。 |
+| `texture(sampler, uv)` | 使用 HLSL 风格纹理采样 helper。 |
+| `main()` | 不需要；用 `Shader` 和 `Graph` 描述材质。 |

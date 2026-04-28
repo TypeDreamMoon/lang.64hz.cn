@@ -1,0 +1,135 @@
+---
+title: VSCode 扩展 ChangeLog
+description: DreamShaderLang VSCode 扩展版本更新记录。
+---
+
+这里记录 `dreamshader-language-support` 扩展的主要变化，按扩展仓库提交历史和扩展仓库 `CHANGELOG.md` 整理。
+
+扩展仓库：
+
+[https://github.com/TypeDreamMoon/dreamshader-language-support](https://github.com/TypeDreamMoon/dreamshader-language-support)
+
+## 1.2.16 - 2026-04-28
+
+### Root 补全
+
+- 在 `Root="Plugin."` 后自动补全当前 Unreal 项目 `Plugins` 目录下带 `Content` 的插件名。
+- 补全结果会优先使用扩展配置里的 `dreamshader.projectRoot`，否则从当前 `.dsm` / `.dsh` 文件和工作区自动识别项目根。
+
+## 1.2.15 - 2026-04-28
+
+### Root 文档
+
+- 明确 `Root="Plugin.PluginName"` 指向项目插件内容目录 `[Project]/Plugins/PluginName/Content`。
+- 示例说明 `Shader(Name="Mat/Test", Root="Plugin.MoonToon")` 会生成 `/MoonToon/Mat/Test.Test`。
+
+## 1.2.14 - 2026-04-28
+
+### Root 支持
+
+- 新增 `Shader` / `ShaderFunction` 顶层 `Root` 属性的补全、Hover、Snippet 和语法高亮。
+- 顶层 block 识别支持 `Name` 出现在 `Root` 之后。
+
+## 1.2.13 - 2026-04-26
+
+### 自动发布
+
+- 新增 GitHub Actions 自动发布流程。
+- 推送到 `main` 后，workflow 会读取 `package.json` 中的版本号，执行 `npm ci`、`node --check extension.js` 和 `npm run package`。
+- workflow 会创建或复用 `vX.Y.Z` 标签，并把生成的 `dreamshaderlang-language-support-X.Y.Z.vsix` 上传到对应 GitHub Release。
+- 支持手动触发 workflow，用于重新生成某个版本的发布包。
+
+## 1.2.12 - 2026-04-26
+
+### 控件与 Bridge 窗口
+
+- `DreamShader Bridge` 从 Explorer 侧边栏迁移到 VSCode 底部 Panel，使用方式更接近“问题 / 输出”窗口。
+- 新增 `Show Bridge Panel` 命令，状态栏点击后会打开 Bridge Panel。
+- CodeLens 增加 Bridge 快捷入口，便于在源码顶部直接打开诊断窗口。
+- Bridge 树节点增加更清晰的状态图标和右键打开操作。
+- Package Store Webview 控件重新整理，加入统计、卡片 hover、焦点状态和更统一的按钮样式。
+
+## 1.2.11 - 2026-04-26
+
+### Graph 体验
+
+- 将 `Shader` / `ShaderFunction` 的图构建区块语言服务从 `Code = { ... }` 更新到 `Graph = { ... }`。
+- `Graph` 支持基础 `if` / `else` 的本地解析、诊断和语句切分。
+- `Graph` 分支里的声明和 Function `out` 目标会参与可见符号收集，补全体验更接近真实写法。
+- snippets、内置模板、Hover、语法高亮和诊断文案统一使用 `Graph`。
+
+## 1.2.10 - 2026-04-22
+
+- 更新 DreamShaderLang 现代 Function 签名支持，围绕 `in` / `out` 参数模型增强补全和诊断。
+- 改进 Function 定义、调用和示例模板的语言服务表现。
+
+## 1.2.9 - 2026-04-22
+
+- 新增 Explorer 侧边栏 `DreamShader Bridge` 视图，按项目、源文件和具体问题展示 Unreal 桥接诊断。
+- 桥接诊断显示更多材质编译上下文，包括 stage、asset path、shader platform、quality level 和 raw detail。
+- 新增 `Refresh Bridge Diagnostics` 命令和 Bridge 视图标题栏操作。
+
+## 1.2.8 - 2026-04-22
+
+- 新增 `Clean Generated Shaders` 命令，用于请求 Unreal 清理 `Intermediate/DreamShader/GeneratedShaders` 并触发全量重编。
+- 在命令面板、编辑器标题栏和右键菜单中加入生成 shader 清理入口。
+
+## 1.2.7 - 2026-04-22
+
+- 新增 Function 调用图的本地循环诊断，包括 `SelfContained` 通过 import 可达的递归调用。
+- 加入状态栏项目提示、CodeLens 重编入口、编辑器标题栏和上下文菜单快捷操作。
+- 新增 `dreamshader.showStatusBar` 和 `dreamshader.enableCodeLens` 设置。
+
+## 1.2.6 - 2026-04-22
+
+- 支持 `Function SelfContained Name(...) { ... }` 和 `Function Inline Name(...) { ... }`。
+- 更新补全、Hover、snippets 和语法高亮，以适配自包含 Function。
+
+## 1.2.5 - 2026-04-22
+
+- 扩展 `Settings` 补全覆盖范围，包括 PostProcess、Refraction、WorldPositionOffset、Mobile、Nanite、Usage、Lightmass、Substrate、VirtualTexture 和 PixelDepthOffset 等材质分类。
+- `Path(...)` 帮助文本扩展到 Settings 对象引用，例如 physical material 和 override asset。
+
+## 1.2.4 - 2026-04-22
+
+- 新增 `TranslucencyLightingMode` / `LightingMode` 设置补全。
+- 材质设置支持 Unreal 枚举显示名，例如 `Surface ForwardShading`，也兼容原始枚举名。
+
+## 1.2.3 - 2026-04-22
+
+- 修复 package uninstall，改为使用 lock 记录的安装路径。
+- 新增 `dreamshader.packageUninstall` 兼容命令。
+- 修复只打开 `ProjectName/DShader` 工作区时的 Unreal 桥接诊断发现和监听。
+- 桥接诊断会从打开文档、活动编辑器和工作区推断 Unreal 项目根目录。
+
+## 1.2.2 - 2026-04-22
+
+- 支持逗号声明，例如 `float i, d, s, t = UE.Time(), f = t + 1.0;`。
+- 本地诊断和可见符号追踪支持同一声明语句中后续变量引用前面的变量。
+- 保留 `Expression(...).Pin[n]` 输出绑定支持，并改进图代码解析。
+
+## 1.2.1 - 2026-04-21
+
+- 增加 `Expression(...).Pin[n] = ...` 辅助材质输出绑定的本地验证。
+- 为 `ThinTranslucentMaterialOutput`、`TangentOutput` 等输出节点补充补全、snippet 和语法高亮。
+- 内置模板和 snippets 统一使用 `Base.*` 输出绑定。
+
+## 1.2.0 - 2026-04-21
+
+- 重构 `UE.*` 内置节点元数据，让补全、Hover 和 Signature Help 共享同一套定义。
+- 增加 `TexCoord`、`Time`、`Panner`、`TransformVector`、`TransformPosition` 和 `Expression` 等节点 snippets。
+- `Outputs` 补全支持 `Base.*` 材质属性和 `Expression(...).Pin[n]` 辅助输出节点。
+
+## 1.1.0 - 2026-04-21
+
+- 新增 DreamShader Package 管理命令和 Package Store Index 支持。
+- 改进本地诊断、Function 跳转、References 和格式化。
+- 扩展语言元数据和 VSIX 打包配置。
+
+## 1.0.0 - 2026-04-21
+
+- 初始 DreamShaderLang VSCode 扩展。
+- 注册 `.dsm` 材质文件和 `.dsh` 头文件语言。
+- 支持 `Function`、`Namespace`、`Namespace::Function` 和 `import`。
+- 提供语法高亮、补全、Hover、Signature Help、Go to Definition、Find References、格式化和本地诊断。
+- 集成 Unreal 桥接重编命令和基础诊断回传。

@@ -1,0 +1,111 @@
+---
+title: VSCode 支持
+description: DreamShaderLang 扩展的高亮、补全、跳转、诊断和命令。
+---
+
+DreamShaderLang 的 VSCode 扩展让 `.dsm` / `.dsh` 的编辑体验接近常见编程语言服务。
+
+扩展仓库：
+
+[https://github.com/TypeDreamMoon/dreamshader-language-support](https://github.com/TypeDreamMoon/dreamshader-language-support)
+
+当前扩展版本：`1.2.16`。版本记录见 [VSCode 扩展 ChangeLog](./vscode-changelog.mdx)。
+
+## 能力概览
+
+| 能力 | 内容 |
+| --- | --- |
+| 语法高亮 | 顶层块、section、类型、流程关键字、HLSL helper 和 `Graph`。 |
+| 补全 | section、类型、变量、函数、namespace、`UE.*`、`Path(...)`、import 路径。 |
+| 作用域感知 | `Function` 体、`Graph` 主体和基础 `if` / `else` 分支有不同可见变量。 |
+| 跳转 | import、`Function`、`Namespace::Function`。 |
+| Hover | 函数、property、output、局部变量、`UE.*`。 |
+| Signature Help | 调用函数时提示参数。 |
+| References | 查找函数和 namespace 函数引用。 |
+| 格式化 | 文档级格式化。 |
+| 诊断 | 本地语法诊断、Graph 分支诊断和 Unreal 桥接诊断。 |
+| 操作入口 | 状态栏、CodeLens、编辑器标题栏和底部 Panel 中的 Bridge 视图。 |
+
+## 编辑体验
+
+| 区域 | 支持重点 |
+| --- | --- |
+| `Graph` | 变量声明、赋值、`UE.*`、Function 调用、基础 `if` / `else`。 |
+| `Function` | HLSL 风格 helper、`in` / `out` 签名、`SelfContained` / `Inline`。 |
+| `Outputs` | `Base.*` 材质属性绑定和 `Expression(...).Pin[n]` 输出节点绑定。 |
+| `Settings` | 常见材质设置、枚举值、`Path(...)` 对象引用。 |
+| `import` | 项目 `.dsh`、插件内置库和 Package 路径提示。 |
+
+## 本地诊断
+
+扩展会在编辑时标记：
+
+| 诊断 | 示例 |
+| --- | --- |
+| 花括号不匹配 | 少写 `}`。 |
+| import 无法解析 | `import "Shared/Missing.dsh";` |
+| 函数参数错误 | 缺少 `in` / `out`。 |
+| 函数重复定义 | 同名 helper。 |
+| 顶层结构错误 | `.dsm` / `.dsh` 不符合文件模型。 |
+| Graph 非法语句 | 无法解析表达式或赋值。 |
+| Graph 分支错误 | `if` 条件或 `{ ... }` 块不完整。 |
+| 未知变量 | 使用未声明局部变量。 |
+| 未知函数 | 调用了未导入的 helper。 |
+| 参数数量不匹配 | `Function` 输入和输出目标数量不对。 |
+| `out` 目标非法 | 把表达式传给 `out` 参数。 |
+| `Path(...)` 错误 | 纹理默认资产路径不合法。 |
+
+## Unreal 桥接诊断
+
+Unreal 侧的诊断会通过桥接诊断文件回传给 VSCode。扩展会读取并回显到对应 `.dsm` / `.dsh`。对于 import 后的错误，DreamShader 会尽量通过 source map 映射回真实源文件行列。
+
+底部 Panel 中的 `DreamShader Bridge` 视图会按项目、源文件和具体问题分组显示桥接诊断，使用方式接近 VSCode 内置的“问题 / 输出”窗口。材质编译错误会保留 stage、asset path、shader platform、quality level 和原始 detail，便于在 VSCode 里直接定位生成链路问题。
+
+## 常用命令
+
+```text
+DreamShaderLang: Recompile Current Source
+DreamShaderLang: Recompile All DSM
+DreamShaderLang: Clean Generated Shaders
+DreamShaderLang: Refresh Bridge Diagnostics
+DreamShaderLang: Install Package from GitHub
+DreamShaderLang: Browse Package Store
+DreamShaderLang: Update Installed Packages
+DreamShaderLang: Remove Installed Package
+DreamShaderLang: Package Uninstall
+DreamShaderLang: Open Packages Folder
+DreamShaderLang: Add Package Store Index Source
+DreamShaderLang: Remove Package Store Index Source
+DreamShaderLang: Create Package Step by Step
+DreamShaderLang: Create DreamShader Material
+DreamShaderLang: Create DreamShader Header
+DreamShaderLang: Create DreamShader Texture Sample
+DreamShaderLang: Create DreamShader Noise Material
+```
+
+## 工作区设置
+
+如果 VSCode 打开的不是 Unreal 项目根目录，可以在扩展设置中指定 `dreamshader.projectRoot`。面向公开文档时，建议只说明配置项含义，不写个人机器上的绝对路径。
+
+Package store：
+
+```json
+{
+  "dreamshader.packageStoreIndexUrls": [
+    "https://raw.githubusercontent.com/TypeDreamMoon/dreamshader-package-index/main/packages.json"
+  ],
+  "dreamshader.enableGitHubPackageSearch": true
+}
+```
+
+旧配置 `dreamshader.packageStoreIndexUrl` 仍兼容，但推荐使用 `dreamshader.packageStoreIndexUrls`。
+
+## 推荐使用方式
+
+| 场景 | 建议 |
+| --- | --- |
+| 新材质 | 使用 `Create DreamShader Material` 模板。 |
+| 新共享库 | 使用 `Create DreamShader Header` 或手写 `.dsh`。 |
+| 纹理采样 | 使用 texture sample 模板、项目共享 `.dsh` 或 Package。 |
+| Package | 通过 Package Store 安装，避免手动复制依赖。 |
+| 排错 | 先看 VSCode 本地诊断，再看 Unreal 桥接诊断。 |

@@ -1,0 +1,85 @@
+---
+title: 插件工作流
+description: 从编辑 DreamShaderLang 到生成 Unreal 材质资产的日常流程。
+---
+
+DreamShader 的推荐工作流是：文本源文件作为真实来源，Unreal 资产作为生成结果。这样材质逻辑可以被搜索、审查、复用和版本管理。
+
+## 日常流程
+
+1. 在 `DShader` 中创建或修改 `.dsm` / `.dsh`。
+2. 在 `.dsh` 中维护共享 `Function` 和 `Namespace`。
+3. 在 `.dsm` 中通过 `import` 引入共享文件或 Package。
+4. 在 `Shader` / `ShaderFunction` 的 `Graph` 中描述节点连接。
+5. 保存源文件，或通过 VSCode 扩展执行重编命令。
+6. 在 Unreal Editor 中查看生成的材质或材质函数。
+
+## `.dsm` 工作流
+
+`.dsm` 是资产入口：
+
+```c
+Shader(Name="DreamMaterials/M_Tinted")
+{
+    Properties = {
+        vec3 Tint = vec3(1.0, 0.5, 0.25);
+    }
+
+    Settings = {
+        Domain = "UI";
+        ShadingModel = "Unlit";
+    }
+
+    Outputs = {
+        vec3 Color;
+        Base.EmissiveColor = Color;
+    }
+
+    Graph = {
+        Color = Tint;
+    }
+}
+```
+
+## `.dsh` 工作流
+
+`.dsh` 适合放共享 helper：
+
+```c
+Namespace(Name="Color")
+{
+    Function ApplyTint(in vec3 color, in vec3 tint, out vec3 result) {
+        result = color * tint;
+    }
+}
+```
+
+`.dsm` 引入：
+
+```c
+import "Shared/Color.dsh";
+```
+
+保存 `.dsh` 后，插件会刷新依赖它的 `.dsm`。
+
+## 生成和缓存
+
+DreamShader 会在生成资产时记录：
+
+```text
+DreamShader.SourceFile
+DreamShader.SourceHash
+DreamShader.GeneratedAtUtc
+```
+
+如果源内容没有变化，可以跳过重复生成。这个机制适合全量扫描或自动保存场景。
+
+## 团队协作建议
+
+| 内容 | 建议 |
+| --- | --- |
+| `.dsm` / `.dsh` | 提交到版本库。 |
+| Package 锁文件 | 团队协作时建议提交，保证依赖来源一致。 |
+| 生成材质资产 | 根据项目资产管理策略决定是否提交。 |
+| 公共函数 | 放到 `Shared` 或 Package 中。 |
+| 复杂材质 | 把 Graph 节点连接和 HLSL helper 分层，不要把所有逻辑堆在一处。 |

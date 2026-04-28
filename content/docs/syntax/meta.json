@@ -1,0 +1,12 @@
+{
+  "title": "语言核心",
+  "pages": [
+    "file-model",
+    "declarations",
+    "sections",
+    "types-and-values",
+    "functions",
+    "graph",
+    "imports-and-namespaces"
+  ]
+}
