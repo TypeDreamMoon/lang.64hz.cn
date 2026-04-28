@@ -5,6 +5,13 @@ description: DreamShader 插件版本更新记录。
 
 DreamShader 的版本更新记录按插件版本整理。这里主要记录会影响使用者的语言、生成器、工作流和兼容性变化。
 
+## 1.1.4 - 2026-04-28
+
+### 资产生成
+
+- `Root="Plugins.PluginName"` / `Root="Plugins/PluginName"` 现在作为兼容写法支持，解析结果与 `Root="Plugin.PluginName"` 相同。
+- 这避免 `Plugins.MoonToon` 被当作普通 `/Game/Plugins_MoonToon` 子目录保存。
+
 ## 1.1.3 - 2026-04-28
 
 ### 资产生成

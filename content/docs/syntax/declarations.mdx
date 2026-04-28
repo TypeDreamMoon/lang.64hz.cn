@@ -37,7 +37,7 @@ Shader(Name="DreamMaterials/M_Sample", Root="Game")
 | 项目 | 规则 |
 | --- | --- |
 | `Name` | 必填，解析为 `Root` 下的相对资产路径。 |
-| `Root` | 可选，默认 `Game`。支持 `Game`、`Plugin.PluginName`，也可追加子目录，例如 `Game/Generated`；`Plugin.PluginName` 指向 `[Project]/Plugins/PluginName/Content`。 |
+| `Root` | 可选，默认 `Game`。支持 `Game`、`Plugin.PluginName`，也可追加子目录，例如 `Game/Generated`；`Plugin.PluginName` 指向 `[Project]/Plugins/PluginName/Content`，`Plugins.PluginName` 作为兼容写法同样支持。 |
 | `Graph` | 必填。没有 `Graph` 会报错。 |
 | `Outputs` | 强烈建议显式提供；没有输出绑定时无法得到有效材质输出。 |
 | `Code` | 不再作为 `Shader` section 使用，必须改为 `Graph`。 |
