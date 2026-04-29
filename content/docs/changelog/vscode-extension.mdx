@@ -1,5 +1,5 @@
 ---
-title: VSCode 扩展 ChangeLog
+title: VSCode 扩展
 description: DreamShaderLang VSCode 扩展版本更新记录。
 ---
 
@@ -8,6 +8,15 @@ description: DreamShaderLang VSCode 扩展版本更新记录。
 扩展仓库：
 
 [https://github.com/TypeDreamMoon/dreamshader-language-support](https://github.com/TypeDreamMoon/dreamshader-language-support)
+
+## 1.2.18 - 2026-04-28
+
+### VirtualFunction
+
+- 新增 `VirtualFunction` 顶层声明的语法高亮、补全、Hover、Snippet、签名提示和本地诊断。
+- `Graph` 中会把 `VirtualFunction` 作为可调用材质函数签名处理，支持 `Output` / `OutputName` / `OutputIndex`。
+- `Options.Asset` 提供 `Path(Plugins.PluginName, "...")` 模板。
+- `Path(Plugin.)` / `Path(Plugins.)` 后会自动补全当前 Unreal 项目 `Plugins` 目录下带 `Content` 的插件名。
 
 ## 1.2.17 - 2026-04-28
 

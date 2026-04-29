@@ -1,9 +1,9 @@
 ---
 title: Section
-description: Shader 与 ShaderFunction 内部 section 的语义。
+description: Shader、ShaderFunction 与 VirtualFunction 内部 section 的语义。
 ---
 
-`Shader` 与 `ShaderFunction` 的主体由 section 组成。section 形式固定为：
+`Shader`、`ShaderFunction` 与 `VirtualFunction` 的主体由 section 组成。section 形式固定为：
 
 ```c
 SectionName = {
@@ -36,7 +36,7 @@ Properties = {
 
 ## `Inputs`
 
-`Inputs` 用在 `ShaderFunction` 中，声明材质函数输入 pin。
+`Inputs` 用在 `ShaderFunction` / `VirtualFunction` 中，声明材质函数输入 pin。
 
 ```c
 Inputs = {
@@ -64,7 +64,7 @@ Outputs = {
 }
 ```
 
-在 `ShaderFunction` 中，它声明材质函数输出 pin：
+在 `ShaderFunction` / `VirtualFunction` 中，它声明材质函数输出 pin：
 
 ```c
 Outputs = {
@@ -108,6 +108,19 @@ Settings = {
 
 更多见 [材质设置参考](../reference/material-settings.mdx)。
 
+## `Options`
+
+`Options` 用在 `VirtualFunction` 中，描述已有 `UMaterialFunction` 资产引用。
+
+```c
+Options = {
+    Asset = Path(Plugins.MoonToon, "MaterialFunctions/Buffer/Writer");
+    Description = "Existing MoonToon material function";
+}
+```
+
+`Asset` 必填，支持 `Game`、`Engine` 和 `Plugin.PluginName` / `Plugins.PluginName` 根路径，也可以写完整 Unreal object path。`Settings` 在 `VirtualFunction` 中作为兼容别名可用，但新代码推荐使用 `Options`。
+
 ## `Graph`
 
 `Graph` 是 DreamShaderLang 的材质图 DSL。
@@ -124,12 +137,13 @@ Graph = {
 
 ## Section 支持矩阵
 
-| Section | `Shader` | `ShaderFunction` |
-| --- | --- | --- |
-| `Properties` | 支持 | 可作为 `Inputs` 兼容写法 |
-| `Inputs` | 不支持 | 支持 |
-| `Outputs` | 支持输出声明和绑定 | 支持输出 pin |
-| `Results` | 不支持 | 可作为 `Outputs` 兼容写法 |
-| `Settings` | 支持 | 支持 |
-| `Graph` | 必填 | 支持 |
-| `Code` | 不支持 | 不支持 |
+| Section | `Shader` | `ShaderFunction` | `VirtualFunction` |
+| --- | --- | --- | --- |
+| `Properties` | 支持 | 可作为 `Inputs` 兼容写法 | 可作为 `Inputs` 兼容写法 |
+| `Inputs` | 不支持 | 支持 | 支持 |
+| `Outputs` | 支持输出声明和绑定 | 支持输出 pin | 支持输出 pin |
+| `Results` | 不支持 | 可作为 `Outputs` 兼容写法 | 可作为 `Outputs` 兼容写法 |
+| `Settings` | 支持 | 支持 | 可作为 `Options` 兼容写法 |
+| `Options` | 不支持 | 不支持 | 支持 |
+| `Graph` | 必填 | 支持 | 不支持 |
+| `Code` | 不支持 | 不支持 | 不支持 |

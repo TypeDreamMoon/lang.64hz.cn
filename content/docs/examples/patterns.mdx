@@ -1,6 +1,6 @@
 ---
 title: 常用模式
-description: 最小材质、共享头文件、Package、Function、UE 节点和 ShaderFunction 示例。
+description: 最小材质、共享头文件、Package、Function、UE 节点、ShaderFunction 和 VirtualFunction 示例。
 ---
 
 这些片段按常见工作流排列，可以直接复制到 `.dsm` / `.dsh` 中改名使用。
@@ -144,5 +144,32 @@ ShaderFunction(Name="Functions/F_Tint")
     Graph = {
         OutColor = InColor * InTint;
     }
+}
+```
+
+## `VirtualFunction`
+
+```c
+VirtualFunction(Name="BufferWriter")
+{
+    Options = {
+        Asset = Path(Plugins.MoonToon, "MaterialFunctions/Buffer/Writer");
+        Description = "Existing MoonToon material function";
+    }
+
+    Inputs = {
+        float3 Color;
+        float Alpha;
+    }
+
+    Outputs = {
+        float3 Result;
+    }
+}
+```
+
+```c
+Graph = {
+    float3 written = BufferWriter(Color, 1.0, Output="Result");
 }
 ```

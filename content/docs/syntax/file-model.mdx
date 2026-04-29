@@ -35,6 +35,7 @@ Shader(Name="DreamMaterials/M_Example")
 | --- | --- |
 | `Shader` | 推荐。 |
 | `ShaderFunction` | 推荐，可放在独立 `.dsm`。 |
+| `VirtualFunction` | 可以，用于声明已有材质函数资产。 |
 | `Function` | 可以，但复用逻辑更推荐放 `.dsh`。 |
 | `Namespace` | 可以，但共享 namespace 更推荐放 `.dsh`。 |
 | `import` | 推荐，用于引入 `.dsh` 或 Package。 |
@@ -63,8 +64,9 @@ Namespace(Name="Color")
 | `import` | 复用其他 header 或 Package。 |
 | `Function` | 无 namespace 的共享 helper。 |
 | `Namespace` | 一组 helper。 |
+| `VirtualFunction` | 只声明已有 `UMaterialFunction` 签名，不直接生成资产。 |
 
-`.dsh` 不直接生成资产。保存 `.dsh` 后，DreamShader 会根据 import graph 找到依赖它的 `.dsm` 并重编。
+`.dsh` 不直接生成 `Shader` / `ShaderFunction` 资产。保存 `.dsh` 后，DreamShader 会根据 import graph 找到依赖它的 `.dsm` 并重编。
 
 ## 顶层块
 
@@ -74,6 +76,7 @@ Namespace(Name="Color")
 import "..."
 Shader(Name="...") { ... }
 ShaderFunction(Name="...") { ... }
+VirtualFunction(Name="...") { ... }
 Function [SelfContained|Inline] Name(...) { ... }
 Namespace(Name="...") { Function ... }
 ```
@@ -116,6 +119,7 @@ Function Remap01(in float value, out float result) {
 ```c
 Shader
 ShaderFunction
+VirtualFunction
 Function
 Namespace
 Properties

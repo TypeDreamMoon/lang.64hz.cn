@@ -1,0 +1,28 @@
+---
+title: 网站更新
+description: lang.64hz.cn 文档站更新记录。
+---
+
+这里记录 `lang.64hz.cn` 文档站本身的信息架构、部署和内容更新。
+
+## 2026-04-29
+
+### ChangeLog 栏目
+
+- 新增顶层 `ChangeLog` 栏目，把 DreamShader 插件、VSCode 扩展和网站更新记录集中到同一个入口。
+- 从 `DreamShader 插件` 和 `生态与工具` 两个栏目中移出原有 changelog 页面，减少导航里的重复层级。
+- 首页顶部导航增加 `ChangeLog` 入口。
+
+### VirtualFunction 文档补全
+
+- 补全 `VirtualFunction` 在顶层声明、Section、Graph 调用、资产生成、类型和值、限制和示例页中的说明。
+- 当前版本表同步到 DreamShader 插件 `1.2.0` 和 VSCode 扩展 `1.2.18`。
+- 更新 `Path(Plugin.PluginName, "...")` / `Path(Plugins.PluginName, "...")` 在文档中的说明，明确插件内容根路径语义。
+
+## 2026-04-28
+
+### 自动部署
+
+- 新增 GitHub Actions 部署工作流，推送到 `main` / `master` 或手动触发时会执行 typecheck、build 和 SFTP 上传。
+- 部署脚本统一到 `upload.js`，通过 `SFTP_HOST`、`SFTP_USER`、`SFTP_PASSWORD` / `SFTP_PRIVATE_KEY`、`SFTP_REMOTE_DIR` 等环境变量或 secrets 配置。
+- 上传前会清理远端目录，同时保留 `.user.ini` 和 `.htaccess`。

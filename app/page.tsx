@@ -37,6 +37,11 @@ const quickLinks = [
     text: '材质设置、输出绑定、UE 节点入口和包。',
     href: '/docs/reference/material-settings',
   },
+  {
+    title: 'ChangeLog',
+    text: '插件、VSCode 扩展和文档站更新记录。',
+    href: '/docs/changelog',
+  },
 ];
 
 export default function HomePage() {
@@ -53,6 +58,11 @@ export default function HomePage() {
         {
           text: 'Packages',
           url: '/docs/workflows/package-authoring',
+          active: 'nested-url',
+        },
+        {
+          text: 'ChangeLog',
+          url: '/docs/changelog',
           active: 'nested-url',
         },
         {

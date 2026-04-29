@@ -85,7 +85,7 @@ float3 xyz = normal.xyz;
 
 ### 函数调用
 
-Graph 中有三类调用：
+Graph 中有四类调用：
 
 ```c
 float2 uv = UE.TexCoord(Index=0);
@@ -94,6 +94,7 @@ vec3 result;
 ApplyTint(color, tint, result);
 
 vec3 tinted = F_Tint(InColor=color, InTint=tint);
+vec3 existing = BufferWriter(color, 1.0, Output="Result");
 ```
 
 | 调用 | 返回方式 |
@@ -101,6 +102,7 @@ vec3 tinted = F_Tint(InColor=color, InTint=tint);
 | `UE.*` | 返回一个图值，可赋值。 |
 | `Function` | 必须作为表达式语句调用，并传显式 `out` 变量。 |
 | `ShaderFunction` | 返回材质函数输出，可作为表达式使用。 |
+| `VirtualFunction` | 返回已有材质函数输出，可作为表达式使用。 |
 
 ## `Function` 调用
 
@@ -169,6 +171,38 @@ Graph = {
 float value = F_MultiOutput(Input=Mask, Output="Height");
 float other = F_MultiOutput(Input=Mask, OutputIndex=1);
 ```
+
+## `VirtualFunction` 调用
+
+`VirtualFunction` 先声明已有材质函数资产：
+
+```c
+VirtualFunction(Name="BufferWriter")
+{
+    Options = {
+        Asset = Path(Plugins.MoonToon, "MaterialFunctions/Buffer/Writer");
+    }
+
+    Inputs = {
+        float3 Color;
+        float Alpha;
+    }
+
+    Outputs = {
+        float3 Result;
+    }
+}
+```
+
+然后在 `Graph` 中调用：
+
+```c
+Graph = {
+    float3 result = BufferWriter(Color, 1.0, Output="Result");
+}
+```
+
+输入会优先按声明名称匹配到真实资产 pin，名称找不到时再按顺序兜底。多输出时同样使用 `Output` / `OutputName` / `OutputIndex` 选择输出。
 
 ## `if` / `else`
 

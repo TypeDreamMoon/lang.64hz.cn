@@ -93,11 +93,12 @@ float pulse = UE.Expression(
 
 ## `Path(...)`
 
-纹理 property 可以使用 `Path(...)` 指定默认 Unreal 资产。
+纹理 property、对象类 `Settings` 和 `VirtualFunction` 的 `Options.Asset` 可以使用 `Path(...)` 指定 Unreal 资产。
 
 ```c
 Properties = {
     Texture2D MainTex = Path(Game, "/Textures/T_Main");
+    Texture2D PluginTex = Path(Plugins.MoonToon, "/Textures/T_Plugin");
     Texture2D DefaultTex = Path("/Engine/EngineResources/DefaultTexture");
     TextureCube SkyTex = Path(Engine, "/EngineResources/DefaultTextureCube");
 }
@@ -109,6 +110,8 @@ Properties = {
 | --- | --- |
 | `Path(Game, "/Textures/T_Main")` | `/Game/Textures/T_Main.T_Main` |
 | `Path(Engine, "/EngineResources/DefaultTexture")` | `/Engine/EngineResources/DefaultTexture.DefaultTexture` |
+| `Path(Plugin.MoonToon, "MaterialFunctions/Buffer/Writer")` | `/MoonToon/MaterialFunctions/Buffer/Writer.Writer` |
+| `Path(Plugins.MoonToon, "MaterialFunctions/Buffer/Writer")` | 与 `Plugin.MoonToon` 相同。 |
 | `Path("/Game/Textures/T_Main")` | 保留 `/Game` 根。 |
 | `Path("/Engine/EngineResources/DefaultTexture")` | 保留 `/Engine` 根。 |
 

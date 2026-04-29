@@ -9,14 +9,14 @@ DreamShaderLang 的 VSCode 扩展让 `.dsm` / `.dsh` 的编辑体验接近常见
 
 [https://github.com/TypeDreamMoon/dreamshader-language-support](https://github.com/TypeDreamMoon/dreamshader-language-support)
 
-当前扩展版本：`1.2.17`。版本记录见 [VSCode 扩展 ChangeLog](./vscode-changelog.mdx)。
+当前扩展版本：`1.2.18`。版本记录见 [VSCode 扩展 ChangeLog](../changelog/vscode-extension.mdx)。
 
 ## 能力概览
 
 | 能力 | 内容 |
 | --- | --- |
 | 语法高亮 | 顶层块、section、类型、流程关键字、HLSL helper 和 `Graph`。 |
-| 补全 | section、类型、变量、函数、namespace、`UE.*`、`Path(...)`、import 路径。 |
+| 补全 | section、类型、变量、函数、namespace、`UE.*`、`Path(...)`、Root / Path 插件名、import 路径。 |
 | 作用域感知 | `Function` 体、`Graph` 主体和基础 `if` / `else` 分支有不同可见变量。 |
 | 跳转 | import、`Function`、`Namespace::Function`。 |
 | Hover | 函数、property、output、局部变量、`UE.*`。 |
@@ -32,6 +32,7 @@ DreamShaderLang 的 VSCode 扩展让 `.dsm` / `.dsh` 的编辑体验接近常见
 | --- | --- |
 | `Graph` | 变量声明、赋值、`UE.*`、Function 调用、基础 `if` / `else`。 |
 | `Function` | HLSL 风格 helper、`in` / `out` 签名、`SelfContained` / `Inline`。 |
+| `VirtualFunction` | 顶层声明、`Options.Asset`、输入输出 pin、Graph 调用和缺失项诊断。 |
 | `Outputs` | `Base.*` 材质属性绑定和 `Expression(...).Pin[n]` 输出节点绑定。 |
 | `Settings` | 常见材质设置、枚举值、`Path(...)` 对象引用。 |
 | `import` | 项目 `.dsh`、插件内置库和 Package 路径提示。 |
@@ -53,6 +54,7 @@ DreamShaderLang 的 VSCode 扩展让 `.dsm` / `.dsh` 的编辑体验接近常见
 | 未知函数 | 调用了未导入的 helper。 |
 | 参数数量不匹配 | `Function` 输入和输出目标数量不对。 |
 | `out` 目标非法 | 把表达式传给 `out` 参数。 |
+| `VirtualFunction` 缺失项 | 缺少 `Options.Asset` 或 `Outputs`。 |
 | `Path(...)` 错误 | 纹理默认资产路径不合法。 |
 
 ## Unreal 桥接诊断

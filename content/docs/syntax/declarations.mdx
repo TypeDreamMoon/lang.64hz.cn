@@ -1,6 +1,6 @@
 ---
 title: 顶层声明
-description: Shader、ShaderFunction、Function 和 Namespace 的完整结构。
+description: Shader、ShaderFunction、VirtualFunction、Function 和 Namespace 的完整结构。
 ---
 
 顶层声明决定当前文件生成什么、暴露什么、复用什么。
@@ -80,6 +80,49 @@ ShaderFunction(Name="Functions/F_Tint", Root="Plugin.MyPlugin")
 | `Outputs` | 输出 pin 声明。 |
 | `Graph` | 材质函数内部图。 |
 | `Settings` | 支持材质函数元数据，例如说明和库分类。 |
+
+## `VirtualFunction`
+
+`VirtualFunction` 声明一个已经存在的 Unreal `UMaterialFunction`，让 `Graph` 可以像调用 `ShaderFunction` 一样调用它。它只描述签名和资产引用，不生成、不保存、不覆盖对应资产。
+
+```c
+VirtualFunction(Name="BufferWriter")
+{
+    Options = {
+        Asset = Path(Plugins.MoonToon, "MaterialFunctions/Buffer/Writer");
+        Description = "Existing MoonToon material function";
+    }
+
+    Inputs = {
+        float3 Color;
+        float Alpha;
+    }
+
+    Outputs = {
+        float3 Result;
+    }
+}
+```
+
+规则：
+
+| 项目 | 规则 |
+| --- | --- |
+| `Name` | 必填，作为 `Graph` 中的调用名。 |
+| `Options.Asset` | 必填，指向已有 `UMaterialFunction`。支持 `Path(Game, "...")`、`Path(Engine, "...")`、`Path(Plugin.PluginName, "...")` / `Path(Plugins.PluginName, "...")` 和完整 Unreal object path。 |
+| `Inputs` | 输入 pin 声明，需要与已有材质函数资产对应。 |
+| `Outputs` | 输出 pin 声明，至少一个。 |
+| `Graph` / `Code` | 不支持，`VirtualFunction` 不拥有实现。 |
+
+调用：
+
+```c
+Graph = {
+    float3 result = BufferWriter(Color, 1.0, Output="Result");
+}
+```
+
+Material Function 资产右键菜单和 Material Function 编辑器工具栏中的 `Copy VirtualFunction Definition` 可以自动生成完整声明。
 
 ## `Function`
 

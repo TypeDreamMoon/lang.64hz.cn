@@ -1,9 +1,23 @@
 ---
-title: ChangeLog
+title: DreamShader 插件
 description: DreamShader 插件版本更新记录。
 ---
 
 DreamShader 的版本更新记录按插件版本整理。这里主要记录会影响使用者的语言、生成器、工作流和兼容性变化。
+
+## 1.2.0 - 2026-04-28
+
+### VirtualFunction
+
+- 新增 `VirtualFunction(Name="...")`，用于声明项目、引擎或插件中已经存在的 `UMaterialFunction` 资产。
+- `VirtualFunction` 可在 `Graph` 中像 `ShaderFunction` 一样作为值函数调用，但不会生成、保存或覆盖对应资产。
+- `Options.Asset` 支持 `Path(Game, "...")`、`Path(Engine, "...")`、`Path(Plugin.PluginName, "...")` / `Path(Plugins.PluginName, "...")`，也支持完整 Unreal object path。
+- Material Function 资产右键菜单和 Material Function 编辑器工具栏新增 `Copy VirtualFunction Definition`，可自动生成包含 `Inputs`、`Outputs` 和 `Options` 的声明。
+
+### 工具链
+
+- VSCode 扩展同步支持 `VirtualFunction` 高亮、补全、Hover、Snippet、签名提示和诊断。
+- `Path(Plugins.)` 内的项目内容插件名也会参与自动补全。
 
 ## 1.1.4 - 2026-04-28
 
