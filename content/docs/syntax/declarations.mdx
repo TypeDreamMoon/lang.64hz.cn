@@ -51,7 +51,9 @@ ShaderFunction(Name="Functions/F_Tint", Root="Plugin.MyPlugin")
 {
     Inputs = {
         vec3 InColor;
-        opt vec3 InTint = vec3(1.0, 1.0, 1.0) [Description="Preview tint"];
+        opt vec3 InTint = vec3(1.0, 1.0, 1.0) [
+            Description="Preview tint";
+        ];
     }
 
     Outputs = {
@@ -97,7 +99,9 @@ VirtualFunction(Name="BufferWriter")
 
     Inputs = {
         float3 Color;
-        opt float Alpha = 1.0 [Description="Preview alpha"];
+        opt float Alpha = 1.0 [
+            Description="Preview alpha";
+        ];
     }
 
     Outputs = {

@@ -5,6 +5,15 @@ description: DreamShader 插件版本更新记录。
 
 DreamShader 的版本更新记录按插件版本整理。这里主要记录会影响使用者的语言、生成器、工作流和兼容性变化。
 
+## 1.2.4 - 2026-04-30
+
+### Parameter Reflection
+
+- 声明尾部的 metadata 文档写法切换为分号式 `[...]` 反射属性块。
+- `Properties` 中的显式 Parameter 节点现在可以通过属性块写入任意可反射的 `UMaterialExpression` 属性。
+- `float` / 向量 / 纹理简写生成的 Scalar / Vector / Texture Object Parameter 也使用同一套反射属性块。
+- `TextureSampleParameter2D` 等纹理采样参数可以配置 `SamplerType`、`SamplerSource`、`MipValueMode`、`AutomaticViewMipBias`、`ConstCoordinate`、`ConstMipValue` 等字段。
+
 ## 1.2.3 - 2026-04-29
 
 ### Parameters

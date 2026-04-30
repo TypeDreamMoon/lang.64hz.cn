@@ -67,8 +67,15 @@ Shader(Name="DreamMaterials/M_DreamPulse")
 
 ```c
 Properties = {
-    VectorParameter Tint = float4(0.2, 0.6, 1.0, 1.0) [Group="Color", SortPriority=10, Description="Main tint"];
-    ScalarParameter Strength = 1.0 [Group="Color", SortPriority=20];
+    VectorParameter Tint = float4(0.2, 0.6, 1.0, 1.0) [
+        Group="Color";
+        SortPriority=10;
+        Description="Main tint";
+    ];
+    ScalarParameter Strength = 1.0 [
+        Group="Color";
+        SortPriority=20;
+    ];
 }
 ```
 

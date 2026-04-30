@@ -22,8 +22,15 @@ Properties = {
     float Strength = 1.0;
     vec3 Tint = vec3(1.0, 0.8, 0.6);
     Texture2D MainTex = Path(Game, "/Textures/T_Main");
-    ScalarParameter Roughness = 0.35 [Group="Surface", SortPriority=10, Description="Material roughness"];
-    StaticSwitchParameter UseDetail = true [Group="Switches", SortPriority=30];
+    ScalarParameter Roughness = 0.35 [
+        Group="Surface";
+        SortPriority=10;
+        Description="Material roughness";
+    ];
+    StaticSwitchParameter UseDetail = true [
+        Group="Switches";
+        SortPriority=30;
+    ];
 }
 ```
 
@@ -47,17 +54,36 @@ Properties = {
 | `StaticBoolParameter` | Static Bool Parameter。 |
 | `StaticSwitchParameter` | Static Switch Parameter。 |
 
-声明尾部可追加元数据：
+声明尾部可追加分号式 `[...]` 反射属性块：
 
 ```c
-VectorParameter Tint = float4(1.0, 0.9, 0.8, 1.0) [Group="Surface", SortPriority=20, Description="Base tint"];
+VectorParameter Tint = float4(1.0, 0.9, 0.8, 1.0) [
+    Group="Surface";
+    SortPriority=20;
+    Description="Base tint";
+];
 ```
 
-| 元数据 | 说明 |
+| 属性 | 说明 |
 | --- | --- |
 | `Group` | 参数面板分组。 |
 | `SortPriority` | 参数排序优先级，整数。 |
-| `Description` | 节点说明或参数说明。 |
+| `Description` | 节点说明，会写入 Unreal 节点 `Desc`。 |
+
+属性块会按 Unreal `MaterialExpression` 的 UPROPERTY 反射写入节点，因此 Texture Sample Parameter 也可以配置采样属性：
+
+```c
+TextureSampleParameter2D MetallicMap = Path(Game, "Textures/T_White_Linear") [
+    Group="11 - Specular";
+    SortPriority=51;
+    SamplerType="LinearColor";
+    SamplerSource="FromTextureAsset";
+    MipValueMode="None";
+    AutomaticViewMipBias=true;
+    ConstCoordinate=0;
+    ConstMipValue=-1;
+];
+```
 
 `StaticSwitchParameter` 可以在 `Graph` 中以同名函数形式连接 True / False 两个分支：
 
@@ -74,8 +100,12 @@ Graph = {
 ```c
 Inputs = {
     vec3 InColor;
-    opt vec3 InTint = vec3(1.0, 1.0, 1.0) [Description="Preview tint"];
-    opt float Strength = 1.0 [SortPriority=10];
+    opt vec3 InTint = vec3(1.0, 1.0, 1.0) [
+        Description="Preview tint";
+    ];
+    opt float Strength = 1.0 [
+        SortPriority=10;
+    ];
 }
 ```
 
@@ -86,7 +116,7 @@ float3 a = F_Tint(Color, default, Output="OutColor");
 float3 b = F_Tint(Color, Output="OutColor");
 ```
 
-`Inputs` / `Outputs` 支持 `[SortPriority=..., Description="..."]`。`Group` 也会被解析并保留在语法层，但 Unreal Function Input / Output 节点本身没有分组字段。
+`Inputs` / `Outputs` 支持属性块中的 `SortPriority` 和 `Description`。`Group` 也会被解析并保留在语法层，但 Unreal Function Input / Output 节点本身没有分组字段。
 
 `Inputs` 也可在旧语义中写作 `Properties`，但新文档统一使用 `Inputs`。
 

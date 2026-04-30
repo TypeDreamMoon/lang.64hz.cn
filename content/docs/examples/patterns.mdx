@@ -128,7 +128,9 @@ ShaderFunction(Name="Functions/F_Tint")
 {
     Inputs = {
         vec3 InColor;
-        opt vec3 InTint = vec3(1.0, 1.0, 1.0) [Description="Preview tint"];
+        opt vec3 InTint = vec3(1.0, 1.0, 1.0) [
+            Description="Preview tint";
+        ];
     }
 
     Outputs = {
@@ -180,15 +182,25 @@ Graph = {
 }
 ```
 
-## 参数元数据与静态开关
+## 参数反射属性与静态开关
 
 ```c
 Shader(Name="DreamMaterials/M_StaticSwitch")
 {
     Properties = {
-        VectorParameter BaseColor = float4(0.1, 0.2, 0.3, 1.0) [Group="Surface", SortPriority=10];
-        VectorParameter DetailColor = float4(1.0, 0.8, 0.3, 1.0) [Group="Surface", SortPriority=20];
-        StaticSwitchParameter UseDetail = true [Group="Switches", SortPriority=30, Description="Use detail color"];
+        VectorParameter BaseColor = float4(0.1, 0.2, 0.3, 1.0) [
+            Group="Surface";
+            SortPriority=10;
+        ];
+        VectorParameter DetailColor = float4(1.0, 0.8, 0.3, 1.0) [
+            Group="Surface";
+            SortPriority=20;
+        ];
+        StaticSwitchParameter UseDetail = true [
+            Group="Switches";
+            SortPriority=30;
+            Description="Use detail color";
+        ];
     }
 
     Outputs = {

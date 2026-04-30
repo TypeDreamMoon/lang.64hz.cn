@@ -92,7 +92,7 @@ Shader(Name="DreamMaterials/M_Sample", Root="Plugin.MyPlugin")
 | `VirtualFunction` 调用 | 指向已有资产的 MaterialFunctionCall 节点 |
 | `if` / `else` | Material If 节点 |
 
-`Properties`、`ShaderFunction` / `VirtualFunction` pin 声明尾部的 `[Group="...", SortPriority=32, Description="..."]` 会尽量写入对应 Unreal 节点。材质函数 pin 当前主要使用 description 和 sort priority；Unreal Function Input / Output 本身没有分组字段。
+`Properties` 声明尾部的分号式 `[...]` 属性块会按 Unreal `MaterialExpression` 的 UPROPERTY 名称反射写入生成节点。`Group`、`SortPriority` 和 `Description` 是常用别名，其中 `Description` 会写到节点 `Desc`。材质函数 pin 当前主要使用 description 和 sort priority；Unreal Function Input / Output 本身没有分组字段。
 
 `ShaderFunction` / `VirtualFunction` 输入前的 `opt` 会映射到 FunctionInput 的“使用预览值作为默认值”语义。调用侧传入 `default` 或省略尾部可选输入时，生成器不会连接该输入 pin，让 Unreal 使用预览默认值。
 

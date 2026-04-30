@@ -62,11 +62,17 @@ DreamShaderLang 的公开语法主要围绕材质图与 HLSL helper。`Propertie
 | `StaticBoolParameter` | 静态布尔参数。 |
 | `StaticSwitchParameter` | 静态开关参数，可在 `Graph` 中连接 True / False 分支。 |
 
-这些类型主要用于更明确地控制生成出来的 Unreal MaterialExpression 类型。参数分组、排序和说明使用声明尾部 metadata：
+这些类型主要用于更明确地控制生成出来的 Unreal MaterialExpression 类型。参数分组、排序、说明和节点专属属性使用声明尾部的反射属性块：
 
 ```c
-ScalarParameter Roughness = 0.35 [Group="Surface", SortPriority=10, Description="Material roughness"];
+ScalarParameter Roughness = 0.35 [
+    Group="Surface";
+    SortPriority=10;
+    Description="Material roughness";
+];
 ```
+
+属性块按 Unreal `MaterialExpression` 的 UPROPERTY 名称反射写入节点；不写的字段保持 Unreal 默认值。
 
 ## 字面量
 

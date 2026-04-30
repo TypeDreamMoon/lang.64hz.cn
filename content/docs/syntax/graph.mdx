@@ -225,7 +225,10 @@ float3 result = BufferWriter(Color, default, Output="Result");
 
 ```c
 Properties = {
-    StaticSwitchParameter UseDetail = true [Group="Switches", SortPriority=30];
+    StaticSwitchParameter UseDetail = true [
+        Group="Switches";
+        SortPriority=30;
+    ];
 }
 
 Graph = {

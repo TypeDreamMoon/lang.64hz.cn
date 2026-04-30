@@ -9,7 +9,7 @@ DreamShaderLang 的 VSCode 扩展让 `.dsm` / `.dsh` 的编辑体验接近常见
 
 [https://github.com/TypeDreamMoon/dreamshader-language-support](https://github.com/TypeDreamMoon/dreamshader-language-support)
 
-当前扩展版本：`1.2.22`。版本记录见 [VSCode 扩展 ChangeLog](../changelog/vscode-extension.mdx)。
+当前扩展版本：`1.2.23`。版本记录见 [VSCode 扩展 ChangeLog](../changelog/vscode-extension.mdx)。
 
 ## 能力概览
 
@@ -33,7 +33,7 @@ DreamShaderLang 的 VSCode 扩展让 `.dsm` / `.dsh` 的编辑体验接近常见
 | `Graph` | 变量声明、赋值、`UE.*`、Function 调用、基础 `if` / `else`。 |
 | `Function` | HLSL 风格 helper、`in` / `out` 签名、`SelfContained` / `Inline`。 |
 | `ShaderFunction` / `VirtualFunction` | 顶层声明、`Options.Asset`、输入输出 pin、`opt` / `default`、Graph 调用和缺失项诊断。 |
-| `Properties` | 显式 Parameter 节点、`StaticSwitchParameter`、声明元数据、`UE.CollectionParam(...)`。 |
+| `Properties` | 显式 Parameter 节点、`StaticSwitchParameter`、分号式反射属性块、`UE.CollectionParam(...)`。 |
 | `Outputs` | `Base.*` 材质属性绑定和 `Expression(...).Pin[n]` 输出节点绑定。 |
 | `Settings` | 常见材质设置、枚举值、`Path(...)` 对象引用。 |
 | `import` | 项目 `.dsh`、插件内置库和 Package 路径提示。 |
@@ -57,7 +57,7 @@ DreamShaderLang 的 VSCode 扩展让 `.dsm` / `.dsh` 的编辑体验接近常见
 | `out` 目标非法 | 把表达式传给 `out` 参数。 |
 | `VirtualFunction` 缺失项 | 缺少 `Options.Asset` 或 `Outputs`。 |
 | `default` 参数错误 | 非可选函数输入使用了 `default`。 |
-| 参数元数据错误 | `SortPriority` 不是整数或元数据键不支持。 |
+| 参数反射属性错误 | `SortPriority` 不是整数，或反射属性不能写入对应 Unreal 节点。 |
 | `Path(...)` 错误 | 纹理默认资产路径不合法。 |
 
 ## Unreal 桥接诊断

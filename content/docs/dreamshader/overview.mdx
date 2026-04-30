@@ -64,8 +64,14 @@ DreamShader 是一个 Unreal Engine 材质生成插件。它提供 DreamShaderLa
 
 ```c
 Properties = {
-    ScalarParameter Roughness = 0.35 [Group="Surface", SortPriority=10];
-    StaticSwitchParameter UseDetail = true [Group="Switches", Description="Use detail branch"];
+    ScalarParameter Roughness = 0.35 [
+        Group="Surface";
+        SortPriority=10;
+    ];
+    StaticSwitchParameter UseDetail = true [
+        Group="Switches";
+        Description="Use detail branch";
+    ];
 }
 ```
 
