@@ -74,6 +74,7 @@ float4 rgba = float4(color, 1.0);
 float r = color.r;
 float2 rg = color.rg;
 float3 xyz = normal.xyz;
+float4 rgaa = color.rgaa;
 ```
 
 支持通道：
@@ -82,6 +83,8 @@ float3 xyz = normal.xyz;
 | --- | --- |
 | 坐标风格 | `x` / `y` / `z` / `w` |
 | 颜色风格 | `r` / `g` / `b` / `a` |
+
+Swizzle 支持 1 到 4 个通道，并允许重复通道，例如 `.rrr`、`.ggg`、`.aaa`、`.rgaa`、`.rgbb`。
 
 ### 函数调用
 
@@ -172,6 +175,12 @@ float value = F_MultiOutput(Input=Mask, Output="Height");
 float other = F_MultiOutput(Input=Mask, OutputIndex=1);
 ```
 
+如果输入在声明中标记为 `opt`，调用时可以用 `default` 跳过该输入：
+
+```c
+float3 tinted = F_Tint(BaseColor, default, Output="OutColor");
+```
+
 ## `VirtualFunction` 调用
 
 `VirtualFunction` 先声明已有材质函数资产：
@@ -203,6 +212,44 @@ Graph = {
 ```
 
 输入会优先按声明名称匹配到真实资产 pin，名称找不到时再按顺序兜底。多输出时同样使用 `Output` / `OutputName` / `OutputIndex` 选择输出。
+
+`VirtualFunction` 的 `opt` 输入同样支持 `default`：
+
+```c
+float3 result = BufferWriter(Color, default, Output="Result");
+```
+
+## 参数节点调用
+
+`StaticSwitchParameter` 可以从 `Properties` 声明，再在 `Graph` 中调用同名函数：
+
+```c
+Properties = {
+    StaticSwitchParameter UseDetail = true [Group="Switches", SortPriority=30];
+}
+
+Graph = {
+    float3 result = UseDetail(True=detailColor, False=baseColor);
+}
+```
+
+也可以直接用 `UE.StaticSwitchParameter(...)` 创建临时静态开关节点：
+
+```c
+float3 result = UE.StaticSwitchParameter(
+    Name="UseDetail",
+    Default=true,
+    True=detailColor,
+    False=baseColor);
+```
+
+Material Parameter Collection 使用 `UE.CollectionParam(...)` 读取：
+
+```c
+float wind = UE.CollectionParam(
+    Collection=Path(Game, "Collections/MPC_Wind"),
+    Parameter="WindStrength");
+```
 
 ## `if` / `else`
 

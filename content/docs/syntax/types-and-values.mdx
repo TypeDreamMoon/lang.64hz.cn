@@ -49,6 +49,25 @@ DreamShaderLang 的公开语法主要围绕材质图与 HLSL helper。`Propertie
 
 纹理值可以作为 `Properties`，也可以作为 `Function` / `ShaderFunction` 参数。`Graph if` 不能在两条分支之间选择纹理对象。
 
+## Parameter 节点类型
+
+`Properties` 中除了通用类型，也可以写显式 Unreal Parameter 节点类型：
+
+| 类型 | 用途 |
+| --- | --- |
+| `ScalarParameter` | 标量材质参数。 |
+| `VectorParameter` / `DoubleVectorParameter` | 向量材质参数。 |
+| `TextureObjectParameter` | 纹理对象参数。 |
+| `TextureSampleParameter2D` / `TextureSampleParameterCube` / `TextureSampleParameter2DArray` | 纹理采样参数。 |
+| `StaticBoolParameter` | 静态布尔参数。 |
+| `StaticSwitchParameter` | 静态开关参数，可在 `Graph` 中连接 True / False 分支。 |
+
+这些类型主要用于更明确地控制生成出来的 Unreal MaterialExpression 类型。参数分组、排序和说明使用声明尾部 metadata：
+
+```c
+ScalarParameter Roughness = 0.35 [Group="Surface", SortPriority=10, Description="Material roughness"];
+```
+
 ## 字面量
 
 ### 标量
@@ -93,7 +112,7 @@ float pulse = UE.Expression(
 
 ## `Path(...)`
 
-纹理 property、对象类 `Settings` 和 `VirtualFunction` 的 `Options.Asset` 可以使用 `Path(...)` 指定 Unreal 资产。
+纹理 property、对象类 `Settings`、`VirtualFunction` 的 `Options.Asset` 和 `UE.CollectionParam(...)` 的 `Collection` 可以使用 `Path(...)` 指定 Unreal 资产。
 
 ```c
 Properties = {

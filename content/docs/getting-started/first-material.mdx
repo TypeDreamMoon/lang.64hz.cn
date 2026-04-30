@@ -61,6 +61,19 @@ Shader(Name="DreamMaterials/M_DreamPulse")
 | `Outputs` | 声明图输出变量，并绑定到 `Base.EmissiveColor`。 |
 | `Graph` | 创建材质节点并把结果赋给 `Color`。 |
 
+## 参数面板写法
+
+入门时可以直接写 `float` / `vec3`。当你想控制 Unreal 参数面板里的分组、排序和说明时，可以改成显式 Parameter 节点：
+
+```c
+Properties = {
+    VectorParameter Tint = float4(0.2, 0.6, 1.0, 1.0) [Group="Color", SortPriority=10, Description="Main tint"];
+    ScalarParameter Strength = 1.0 [Group="Color", SortPriority=20];
+}
+```
+
+这会生成对应的 Vector / Scalar Parameter 节点，并把 metadata 写到 Unreal 节点上。
+
 ## 常见问题
 
 | 现象 | 检查 |

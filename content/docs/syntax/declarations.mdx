@@ -51,7 +51,7 @@ ShaderFunction(Name="Functions/F_Tint", Root="Plugin.MyPlugin")
 {
     Inputs = {
         vec3 InColor;
-        vec3 InTint;
+        opt vec3 InTint = vec3(1.0, 1.0, 1.0) [Description="Preview tint"];
     }
 
     Outputs = {
@@ -81,6 +81,8 @@ ShaderFunction(Name="Functions/F_Tint", Root="Plugin.MyPlugin")
 | `Graph` | 材质函数内部图。 |
 | `Settings` | 支持材质函数元数据，例如说明和库分类。 |
 
+输入声明前可加 `opt`，表示该输入可以使用 Unreal FunctionInput 的预览默认值。调用时可以传 `default` 或省略尾部可选输入。
+
 ## `VirtualFunction`
 
 `VirtualFunction` 声明一个已经存在的 Unreal `UMaterialFunction`，让 `Graph` 可以像调用 `ShaderFunction` 一样调用它。它只描述签名和资产引用，不生成、不保存、不覆盖对应资产。
@@ -95,7 +97,7 @@ VirtualFunction(Name="BufferWriter")
 
     Inputs = {
         float3 Color;
-        float Alpha;
+        opt float Alpha = 1.0 [Description="Preview alpha"];
     }
 
     Outputs = {

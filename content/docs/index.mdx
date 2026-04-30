@@ -86,10 +86,20 @@ Shader(Name="DreamMaterials/M_Minimal")
 
 | 项目 | 内容 |
 | --- | --- |
-| DreamShader 插件 | `1.2.2` |
-| VSCode 扩展 | `1.2.18` |
+| DreamShader 插件 | `1.2.3` |
+| VSCode 扩展 | `1.2.22` |
 | 文档站 | `lang.64hz.cn` |
 | 语言 | `DreamShaderLang` |
 | 文件扩展名 | `.dsm` / `.dsh` |
 | 作者 | TypeDreamMoon |
 | 主要产物 | `UMaterial` / `UMaterialFunction` |
+
+## 1.2.3 重点
+
+| 能力 | 说明 |
+| --- | --- |
+| 参数元数据 | `Properties`、`ShaderFunction` / `VirtualFunction` pin 支持 `[Group="...", SortPriority=32, Description="..."]`。 |
+| 显式 Parameter 节点 | `ScalarParameter`、`VectorParameter`、`TextureObjectParameter`、`TextureSampleParameter2D`、`StaticBoolParameter`、`StaticSwitchParameter` 等可直接写在 `Properties`。 |
+| 静态开关 | `StaticSwitchParameter UseDetail = true;` 可在 `Graph` 中用 `UseDetail(True=..., False=...)` 选择分支。 |
+| MPC 参数 | `UE.CollectionParam(Collection=Path(...), Parameter="Name")` 读取 Material Parameter Collection。 |
+| 可选函数输入 | `ShaderFunction` / `VirtualFunction` 输入可写 `opt`，调用侧可传 `default` 或省略尾部可选参数。 |

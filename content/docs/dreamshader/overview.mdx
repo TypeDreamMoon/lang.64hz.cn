@@ -30,6 +30,9 @@ DreamShader 是一个 Unreal Engine 材质生成插件。它提供 DreamShaderLa
 | `ShaderFunction` | 生成或更新 `UMaterialFunction`。 |
 | `VirtualFunction` | 声明已有 `UMaterialFunction`，供 Graph 调用但不覆盖资产。 |
 | `Graph` | 用文本描述 Unreal 材质节点和连接关系。 |
+| 参数生成 | `Properties` 可生成 Scalar / Vector / Texture / Static Switch 等参数节点，并支持分组、排序和说明。 |
+| 外部参数 | 通过 `UE.CollectionParam(...)` 读取 Material Parameter Collection。 |
+| 函数默认输入 | `ShaderFunction` / `VirtualFunction` 可用 `opt` 输入复用 Unreal FunctionInput 的预览默认值。 |
 | `Function` | 编写 HLSL 风格 Custom 节点 helper。 |
 | `Namespace` | 组织共享 helper，降低命名冲突。 |
 | `SelfContained` / `Inline` | 把 helper 依赖嵌入 Custom 节点。 |
@@ -56,6 +59,15 @@ DreamShader 是一个 Unreal Engine 材质生成插件。它提供 DreamShaderLa
 | `.dsh` | 不直接生成资产，作为共享依赖参与 `.dsm` 编译。 |
 
 `Shader` 和 `ShaderFunction` 可用 `Root="Game"` 或 `Root="Plugin.PluginName"` 指定生成资产根路径；省略时默认生成到 `/Game`。`Plugin.PluginName` 指向 `[Project]/Plugins/PluginName/Content`。
+
+生成材质参数时，可以用普通类型保持简洁，也可以用显式 Parameter 类型控制 Unreal 参数节点：
+
+```c
+Properties = {
+    ScalarParameter Roughness = 0.35 [Group="Surface", SortPriority=10];
+    StaticSwitchParameter UseDetail = true [Group="Switches", Description="Use detail branch"];
+}
+```
 
 ## 适合场景
 

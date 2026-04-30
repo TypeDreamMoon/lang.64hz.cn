@@ -112,6 +112,79 @@ Shader(Name="DreamMaterials/M_Surface_PBR")
 }
 ```
 
+## 参数分组与排序
+
+```c
+Properties = {
+    VectorParameter BaseColor = float4(0.8, 0.6, 0.4, 1.0) [Group="Surface", SortPriority=10, Description="Base material color"];
+    ScalarParameter Roughness = 0.5 [Group="Surface", SortPriority=20];
+    ScalarParameter Metallic = 0.0 [Group="Surface", SortPriority=30];
+}
+```
+
+## Static Switch 分支
+
+```c
+Shader(Name="DreamMaterials/M_StaticSwitch")
+{
+    Properties = {
+        VectorParameter BaseColor = float4(0.1, 0.2, 0.3, 1.0) [Group="Surface", SortPriority=10];
+        VectorParameter DetailColor = float4(1.0, 0.8, 0.3, 1.0) [Group="Surface", SortPriority=20];
+        StaticSwitchParameter UseDetail = true [Group="Switches", SortPriority=30];
+    }
+
+    Outputs = {
+        float3 Color;
+        Base.BaseColor = Color;
+    }
+
+    Graph = {
+        Color = UseDetail(True=DetailColor.rgb, False=BaseColor.rgb);
+    }
+}
+```
+
+## Material Parameter Collection
+
+```c
+Graph = {
+    float windStrength = UE.CollectionParam(
+        Collection=Path(Game, "Collections/MPC_Wind"),
+        Parameter="WindStrength");
+
+    Color = Tint * windStrength;
+}
+```
+
+## 可选材质函数输入
+
+```c
+ShaderFunction(Name="Functions/F_DebugColor")
+{
+    Inputs = {
+        float3 InColor;
+        opt float4 ColorA = float4(0.3, 0.3, 0.7, 0.7) [Description="Preview color A"];
+        opt float4 ColorB = float4(0.0, 0.35, 1.0, 0.65) [Description="Preview color B"];
+    }
+
+    Outputs = {
+        float3 Result;
+    }
+
+    Graph = {
+        Result = InColor;
+    }
+}
+```
+
+调用时可以传 `default` 跳过可选输入：
+
+```c
+Graph = {
+    float3 debug = F_DebugColor(BaseColor, default, default, Output="Result");
+}
+```
+
 ## 自定义 MaterialExpression 输出
 
 ```c

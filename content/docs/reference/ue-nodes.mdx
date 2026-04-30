@@ -31,6 +31,8 @@ Graph = {
 | `UE.VertexColor()` | `float4` | Vertex Color。 |
 | `UE.TransformVector(...)` | `float3` | Vector Transform。 |
 | `UE.TransformPosition(...)` | `float3` | Position Transform。 |
+| `UE.CollectionParam(...)` | `float1` / `float4` | Material Parameter Collection 参数。 |
+| `UE.StaticSwitchParameter(...)` | 分支类型 | Static Switch Parameter。 |
 | `UE.Expression(...)` | 显式指定 | 泛型 MaterialExpression 创建入口。 |
 
 ## `UE.TexCoord`
@@ -145,6 +147,55 @@ float r = UE.Expression(
     Input=UV,
     R=true);
 ```
+
+## `UE.CollectionParam`
+
+`UE.CollectionParam` 读取 Material Parameter Collection 中的标量或向量参数。
+
+```c
+float wind = UE.CollectionParam(
+    Collection=Path(Game, "Collections/MPC_Wind"),
+    Parameter="WindStrength");
+```
+
+参数：
+
+| 参数 | 必需 | 说明 |
+| --- | --- | --- |
+| `Collection` / `Asset` | 是 | `Path(...)` 或完整 Unreal object path。 |
+| `Parameter` / `ParameterName` | 是 | MPC 中的参数名。 |
+| `Group` | 否 | 参数分组。 |
+| `SortPriority` | 否 | 排序优先级。 |
+| `Description` | 否 | 节点说明。 |
+
+生成器会加载目标 `UMaterialParameterCollection` 并检查参数是否存在。标量参数返回 `float`，向量参数返回 `float4`。
+
+## `UE.StaticSwitchParameter`
+
+`UE.StaticSwitchParameter` 创建一个带 True / False 输入的静态开关参数。
+
+```c
+float3 color = UE.StaticSwitchParameter(
+    Name="UseDetail",
+    Default=true,
+    True=detailColor,
+    False=baseColor,
+    Description="Choose detail branch");
+```
+
+参数：
+
+| 参数 | 必需 | 说明 |
+| --- | --- | --- |
+| `Name` | 是 | 参数名。 |
+| `Default` | 否 | 默认布尔值。 |
+| `True` | 是 | True 分支表达式。 |
+| `False` | 是 | False 分支表达式。 |
+| `Group` | 否 | 参数分组。 |
+| `SortPriority` | 否 | 排序优先级。 |
+| `Description` | 否 | 节点说明。 |
+
+两条分支必须是相同分量数量的数值类型，不能直接切换纹理对象。
 
 ## `Properties` 中的 `UE.*`
 

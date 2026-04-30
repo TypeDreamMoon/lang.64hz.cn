@@ -128,7 +128,7 @@ ShaderFunction(Name="Functions/F_Tint")
 {
     Inputs = {
         vec3 InColor;
-        vec3 InTint;
+        opt vec3 InTint = vec3(1.0, 1.0, 1.0) [Description="Preview tint"];
     }
 
     Outputs = {
@@ -144,6 +144,12 @@ ShaderFunction(Name="Functions/F_Tint")
     Graph = {
         OutColor = InColor * InTint;
     }
+}
+```
+
+```c
+Graph = {
+    vec3 tinted = F_Tint(BaseColor, default, Output="OutColor");
 }
 ```
 
@@ -171,5 +177,37 @@ VirtualFunction(Name="BufferWriter")
 ```c
 Graph = {
     float3 written = BufferWriter(Color, 1.0, Output="Result");
+}
+```
+
+## 参数元数据与静态开关
+
+```c
+Shader(Name="DreamMaterials/M_StaticSwitch")
+{
+    Properties = {
+        VectorParameter BaseColor = float4(0.1, 0.2, 0.3, 1.0) [Group="Surface", SortPriority=10];
+        VectorParameter DetailColor = float4(1.0, 0.8, 0.3, 1.0) [Group="Surface", SortPriority=20];
+        StaticSwitchParameter UseDetail = true [Group="Switches", SortPriority=30, Description="Use detail color"];
+    }
+
+    Outputs = {
+        float3 Color;
+        Base.BaseColor = Color;
+    }
+
+    Graph = {
+        Color = UseDetail(True=DetailColor.rgb, False=BaseColor.rgb);
+    }
+}
+```
+
+## Material Parameter Collection
+
+```c
+Graph = {
+    float wind = UE.CollectionParam(
+        Collection=Path(Game, "Collections/MPC_Wind"),
+        Parameter="WindStrength");
 }
 ```

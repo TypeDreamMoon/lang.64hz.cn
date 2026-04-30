@@ -9,6 +9,39 @@ description: DreamShaderLang VSCode 扩展版本更新记录。
 
 [https://github.com/TypeDreamMoon/dreamshader-language-support](https://github.com/TypeDreamMoon/dreamshader-language-support)
 
+## 1.2.22 - 2026-04-30
+
+### Parameter 与默认参数
+
+- 补全、Hover、Signature Help 和 Snippet 支持显式 Parameter 节点、`StaticSwitchParameter`、声明元数据和可选函数输入。
+- 新增 `UE.CollectionParam(...)` 与 `UE.StaticSwitchParameter(...)` 的语言服务支持。
+- 本地诊断理解 `ShaderFunction` / `VirtualFunction` 的 `opt` 输入和调用侧 `default` 参数。
+- Inlay Hint 会显示更多参数和元数据信息，便于读复杂节点调用。
+
+## 1.2.21 - 2026-04-29
+
+### Swizzle
+
+- 支持 `DebugFunction(...).rg` 这类链式调用后的 swizzle 诊断。
+- Swizzle 补全和 Hover 支持 1 到 4 通道组合，包括重复通道，例如 `.rrr`、`.ggg`、`.aaa`、`.rgaa`、`.rgbb`。
+
+## 1.2.20 - 2026-04-29
+
+### 语言服务
+
+- 新增 Semantic Tokens，让类型、变量、参数、材质输出和 UE builtin 调用有更稳定的语义高亮。
+- 新增参数 Inlay Hint，用于 DreamShader `Function`、`ShaderFunction`、`VirtualFunction` 和 `UE.*` 调用。
+- import 路径支持可点击文档链接，顶层块和 section 支持 folding range。
+- Outline 视图会显示更细的顶层声明与 section 结构。
+- 清理重复命令别名和历史 VSIX 构建产物。
+
+## 1.2.19 - 2026-04-29
+
+### 快捷入口
+
+- 编辑器标题栏、视图标题栏和右键菜单命令改为使用 VSCode codicon 缩略图。
+- CodeLens 操作从长文本改为更紧凑的图标入口。
+
 ## 1.2.18 - 2026-04-28
 
 ### VirtualFunction

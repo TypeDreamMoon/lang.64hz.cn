@@ -12,11 +12,13 @@ description: DreamShaderLang、HLSL 与 GLSL 常见关键字对照。
 | 顶层声明 | `Shader`, `ShaderFunction`, `VirtualFunction`, `Function`, `Namespace`, `import` |
 | 函数模式 | `SelfContained`, `Inline` |
 | Section | `Properties`, `Inputs`, `Outputs`, `Settings`, `Options`, `Graph` |
-| 参数限定 | `in`, `out` |
+| 参数限定 | `in`, `out`, `opt` |
 | Graph 控制流 | `if`, `else` |
-| Unreal 节点入口 | `UE.*`, `UE.Expression(...)` |
+| Graph 默认参数 | `default` |
+| Unreal 节点入口 | `UE.*`, `UE.Expression(...)`, `UE.CollectionParam(...)`, `UE.StaticSwitchParameter(...)` |
 | 资产路径 helper | `Path(...)` |
 | 输出绑定 | `Base.*`, `Expression(...).Pin[n]` |
+| 声明元数据 | `Group`, `SortPriority`, `Description` |
 
 ## DreamShaderLang 常用类型
 
@@ -28,6 +30,7 @@ description: DreamShaderLang、HLSL 与 GLSL 常见关键字对照。
 | 布尔向量 | `bool2`, `bool3`, `bool4` |
 | GLSL 别名 | `vec2`, `vec3`, `vec4`, `ivec2`, `uvec2`, `bvec2` 等 |
 | 纹理 | `Texture2D`, `TextureCube`, `Texture2DArray`, `SamplerState` |
+| 显式 Parameter | `ScalarParameter`, `VectorParameter`, `TextureObjectParameter`, `TextureSampleParameter2D`, `StaticBoolParameter`, `StaticSwitchParameter` 等 |
 
 ## HLSL 常见关键字
 

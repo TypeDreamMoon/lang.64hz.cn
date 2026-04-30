@@ -5,6 +5,22 @@ description: DreamShader 插件版本更新记录。
 
 DreamShader 的版本更新记录按插件版本整理。这里主要记录会影响使用者的语言、生成器、工作流和兼容性变化。
 
+## 1.2.3 - 2026-04-29
+
+### Parameters
+
+- `Properties` 和函数输入输出声明支持 `[Group="...", SortPriority=32, Description="..."]` 元数据。
+- `Properties` 支持显式 Parameter 节点类型，包括 `ScalarParameter`、`VectorParameter`、`TextureObjectParameter`、纹理采样参数节点、`StaticBoolParameter` 和 `StaticSwitchParameter`。
+- `StaticSwitchParameter` 可以在 `Graph` 中用同名函数调用，例如 `UseDetail(True=detailColor, False=baseColor)`。
+- 新增 `UE.CollectionParam(Collection=Path(...), Parameter="...")`，用于读取 Material Parameter Collection。
+
+### Function Defaults
+
+- `ShaderFunction` 和 `VirtualFunction` 的输入支持 `opt`，用于表示该输入可使用 Unreal FunctionInput 的预览默认值。
+- 调用 `ShaderFunction` / `VirtualFunction` 时支持 `default` 参数，显式跳过可选输入并沿用预览默认值。
+- 生成 `ShaderFunction` 资产时会把输入输出的 description 和 sort priority 写入 FunctionInput / FunctionOutput 节点。
+- `VirtualFunction` 的复制、创建和启动同步现在会尽量带上可选输入、预览默认值和 pin 元数据。
+
 ## 1.2.2 - 2026-04-29
 
 ### VirtualFunction 编辑器工作流
