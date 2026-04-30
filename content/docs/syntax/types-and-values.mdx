@@ -49,6 +49,24 @@ DreamShaderLang 的公开语法主要围绕材质图与 HLSL helper。`Propertie
 
 纹理值可以作为 `Properties`，也可以作为 `Function` / `ShaderFunction` 参数。`Graph if` 不能在两条分支之间选择纹理对象。
 
+## MaterialAttributes
+
+`MaterialAttributes` 表示 Unreal 的完整材质属性聚合值。它适合把一组材质属性作为一个值从 `ShaderFunction` / `VirtualFunction` 返回，或在 `Shader` 中绑定到主材质输出：
+
+```c
+Outputs = {
+    MaterialAttributes Attrs;
+    Base.MaterialAttributes = Attrs;
+}
+
+Graph = {
+    Attrs.BaseColor = Color;
+    Attrs.Roughness = Roughness;
+}
+```
+
+`MaterialAttributes` 不是普通数值向量，不能参与加减乘除或向量构造。读取成员时会得到对应的数值类型，例如 `Attrs.BaseColor` 是 `float3`，`Attrs.Roughness` 是 `float`。
+
 ## Parameter 节点类型
 
 `Properties` 中除了通用类型，也可以写显式 Unreal Parameter 节点类型：

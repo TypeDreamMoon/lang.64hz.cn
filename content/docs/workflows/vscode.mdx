@@ -9,14 +9,14 @@ DreamShaderLang 的 VSCode 扩展让 `.dsm` / `.dsh` 的编辑体验接近常见
 
 [https://github.com/TypeDreamMoon/dreamshader-language-support](https://github.com/TypeDreamMoon/dreamshader-language-support)
 
-当前扩展版本：`1.2.23`。版本记录见 [VSCode 扩展 ChangeLog](../changelog/vscode-extension.mdx)。
+当前扩展版本：`1.2.24`。版本记录见 [VSCode 扩展 ChangeLog](../changelog/vscode-extension.mdx)。
 
 ## 能力概览
 
 | 能力 | 内容 |
 | --- | --- |
 | 语法高亮 | 顶层块、section、类型、流程关键字、HLSL helper 和 `Graph`。 |
-| 补全 | section、类型、变量、函数、namespace、`UE.*`、`Path(...)`、Root / Path 插件名、import 路径。 |
+| 补全 | section、类型、变量、函数、namespace、`UE.*`、`Path(...)`、Root / Path 插件名、import 路径、`MaterialAttributes` 成员。 |
 | 作用域感知 | `Function` 体、`Graph` 主体和基础 `if` / `else` 分支有不同可见变量。 |
 | 跳转 | import、`Function`、`Namespace::Function`。 |
 | Hover | 函数、property、output、局部变量、`UE.*`。 |
@@ -30,11 +30,11 @@ DreamShaderLang 的 VSCode 扩展让 `.dsm` / `.dsh` 的编辑体验接近常见
 
 | 区域 | 支持重点 |
 | --- | --- |
-| `Graph` | 变量声明、赋值、`UE.*`、Function 调用、基础 `if` / `else`。 |
+| `Graph` | 变量声明、赋值、`UE.*`、Function 调用、`MaterialAttributes` 成员写入、基础 `if` / `else`。 |
 | `Function` | HLSL 风格 helper、`in` / `out` 签名、`SelfContained` / `Inline`。 |
 | `ShaderFunction` / `VirtualFunction` | 顶层声明、`Options.Asset`、输入输出 pin、`opt` / `default`、Graph 调用和缺失项诊断。 |
 | `Properties` | 显式 Parameter 节点、`StaticSwitchParameter`、分号式反射属性块、`UE.CollectionParam(...)`。 |
-| `Outputs` | `Base.*` 材质属性绑定和 `Expression(...).Pin[n]` 输出节点绑定。 |
+| `Outputs` | `Base.*` / `Base.MaterialAttributes` 材质属性绑定和 `Expression(...).Pin[n]` 输出节点绑定。 |
 | `Settings` | 常见材质设置、枚举值、`Path(...)` 对象引用。 |
 | `import` | 项目 `.dsh`、插件内置库和 Package 路径提示。 |
 

@@ -5,6 +5,15 @@ description: DreamShader 插件版本更新记录。
 
 DreamShader 的版本更新记录按插件版本整理。这里主要记录会影响使用者的语言、生成器、工作流和兼容性变化。
 
+## 1.2.5 - 2026-04-30
+
+### MaterialAttributes
+
+- 新增 `MaterialAttributes` 图值类型，可用于 `Shader` 输出声明、`ShaderFunction` 输出和 `VirtualFunction` 输出签名。
+- `Graph` 支持 `Attrs.BaseColor = Color;`、`Attrs.Roughness = Roughness;` 这类成员写入，生成器会创建 Material Attributes 相关节点。
+- `Shader` 可以将聚合值绑定到 `Base.MaterialAttributes`，生成材质会自动启用 Unreal 的 `Use Material Attributes`。
+- `MaterialAttributes` 值可以从生成的或已有的 Material Function 返回，并继续在 Graph 中传递、分支或读取成员。
+
 ## 1.2.4 - 2026-04-30
 
 ### Parameter Reflection

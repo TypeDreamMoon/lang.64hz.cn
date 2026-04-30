@@ -136,11 +136,21 @@ Outputs = {
 }
 ```
 
+如果需要走 Unreal 的完整 Material Attributes 输入，可以声明聚合输出并绑定到 `Base.MaterialAttributes`：
+
+```c
+Outputs = {
+    MaterialAttributes Attrs;
+    Base.MaterialAttributes = Attrs;
+}
+```
+
 在 `ShaderFunction` / `VirtualFunction` 中，它声明材质函数输出 pin：
 
 ```c
 Outputs = {
     vec3 OutColor;
+    MaterialAttributes OutAttrs;
 }
 ```
 

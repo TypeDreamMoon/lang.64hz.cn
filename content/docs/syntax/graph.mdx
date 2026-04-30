@@ -24,6 +24,7 @@ Graph = {
 | 声明 | `float value;` |
 | 声明并初始化 | `vec3 color = vec3(1.0, 0.0, 0.0);` |
 | 赋值 | `Color = Tint;` |
+| MaterialAttributes 成员写入 | `Attrs.BaseColor = Color;` |
 | 表达式语句 | `ApplyTint(A, B, Result);` |
 | `if` / `else` | `if (Mask > 0.5) { ... } else { ... }` |
 
@@ -85,6 +86,25 @@ float4 rgaa = color.rgaa;
 | 颜色风格 | `r` / `g` / `b` / `a` |
 
 Swizzle 支持 1 到 4 个通道，并允许重复通道，例如 `.rrr`、`.ggg`、`.aaa`、`.rgaa`、`.rgbb`。
+
+### MaterialAttributes
+
+`MaterialAttributes` 是 Unreal 材质属性聚合值。通常先在 `Outputs` 中声明并绑定，然后在 `Graph` 里写成员：
+
+```c
+Outputs = {
+    MaterialAttributes Attrs;
+    Base.MaterialAttributes = Attrs;
+}
+
+Graph = {
+    Attrs.BaseColor = BaseColor;
+    Attrs.Roughness = Roughness;
+    Attrs.Metallic = Metallic;
+}
+```
+
+成员名使用 Unreal 材质属性名，例如 `BaseColor`、`Roughness`、`Metallic`、`Normal`、`Opacity`、`EmissiveColor`、`AmbientOcclusion`。`MaterialAttributes` 本身不能参与算术；读取 `Attrs.BaseColor` 会生成 Break Material Attributes 并得到 `float3`，写入 `Attrs.Roughness` 会生成 Set Material Attributes 链。
 
 ### 函数调用
 
@@ -279,7 +299,7 @@ Graph = {
 | `>=` / `<=` | 大于等于 / 小于等于。 |
 | `==` / `!=` | 等于 / 不等于。 |
 
-生成器会创建 Unreal Material `If` 节点来合并分支结果。条件两侧必须是标量。分支不能选择 `Texture2D`、`TextureCube` 或 `Texture2DArray` 值。
+生成器会创建 Unreal Material `If` 节点来合并分支结果。条件两侧必须是标量。分支不能选择 `Texture2D`、`TextureCube` 或 `Texture2DArray` 值；`MaterialAttributes` 分支可以合并，但两侧都必须是 `MaterialAttributes`。
 
 ## 当前不支持
 

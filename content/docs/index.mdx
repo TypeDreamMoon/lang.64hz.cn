@@ -86,18 +86,21 @@ Shader(Name="DreamMaterials/M_Minimal")
 
 | 项目 | 内容 |
 | --- | --- |
-| DreamShader 插件 | `1.2.4` |
-| VSCode 扩展 | `1.2.23` |
+| DreamShader 插件 | `1.2.5` |
+| VSCode 扩展 | `1.2.24` |
 | 文档站 | `lang.64hz.cn` |
 | 语言 | `DreamShaderLang` |
 | 文件扩展名 | `.dsm` / `.dsh` |
 | 作者 | TypeDreamMoon |
 | 主要产物 | `UMaterial` / `UMaterialFunction` |
 
-## 1.2.4 重点
+## 1.2.5 重点
 
 | 能力 | 说明 |
 | --- | --- |
+| MaterialAttributes | `ShaderFunction` / `VirtualFunction` 可声明 `MaterialAttributes` 输出，`Shader` 可绑定 `Base.MaterialAttributes`。 |
+| 成员写入 | `Graph` 支持 `Attrs.BaseColor = ...`、`Attrs.Roughness = ...` 这类结构体式写法。 |
+| VSCode 支持 | 扩展补全和诊断支持 `MaterialAttributes` 类型、成员补全和 `Base.MaterialAttributes` 输出绑定。 |
 | 参数反射属性块 | `Properties`、`ShaderFunction` / `VirtualFunction` pin 支持分号式 `[...]` 属性块。 |
 | 通用反射 | Parameter 节点属性块会按 Unreal `MaterialExpression` UPROPERTY 反射写入，例如 `SamplerType`、`MipValueMode`、`AutomaticViewMipBias`。 |
 | 显式 Parameter 节点 | `ScalarParameter`、`VectorParameter`、`TextureObjectParameter`、`TextureSampleParameter2D`、`StaticBoolParameter`、`StaticSwitchParameter` 等可直接写在 `Properties`。 |
