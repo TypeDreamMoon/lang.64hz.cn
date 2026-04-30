@@ -49,11 +49,16 @@ Shader(Name="DreamMaterials/M_Sample", Root="Game")
 ```c
 ShaderFunction(Name="Functions/F_Tint", Root="Plugin.MyPlugin")
 {
+    Properties = {
+        const Texture2D PreviewTex;
+    }
+
     Inputs = {
         vec3 InColor;
         opt vec3 InTint = vec3(1.0, 1.0, 1.0) [
             Description="Preview tint";
         ];
+        opt Texture2D BaseColorTex = PreviewTex;
     }
 
     Outputs = {
@@ -78,6 +83,7 @@ ShaderFunction(Name="Functions/F_Tint", Root="Plugin.MyPlugin")
 | --- | --- |
 | `Name` | 必填，生成 `UMaterialFunction` 的资产路径。 |
 | `Root` | 可选，规则同 `Shader`。 |
+| `Properties` | 可选，声明材质函数内部的 parameter/helper 节点。 |
 | `Inputs` | 输入 pin 声明。 |
 | `Outputs` | 输出 pin 声明。 |
 | `Graph` | 材质函数内部图。 |

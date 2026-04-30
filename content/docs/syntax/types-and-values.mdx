@@ -47,7 +47,7 @@ DreamShaderLang 的公开语法主要围绕材质图与 HLSL helper。`Propertie
 | `Texture2DArray` | 2D Array 纹理对象。 |
 | `SamplerState` | 采样器类型，主要用于 helper 参数。 |
 
-纹理值可以作为 `Properties`，也可以作为 `Function` / `ShaderFunction` 参数。`Graph if` 不能在两条分支之间选择纹理对象。
+纹理值可以作为 `Properties`，也可以作为 `Function` / `ShaderFunction` 参数。`ShaderFunction.Properties` 中的 `const Texture2D PreviewTex;` 会生成 Texture Object helper，可作为 `Inputs` 的预览默认值。`Graph if` 不能在两条分支之间选择纹理对象。
 
 ## MaterialAttributes
 
@@ -88,6 +88,15 @@ ScalarParameter Roughness = 0.35 [
     SortPriority=10;
     Description="Material roughness";
 ];
+```
+
+在 `Properties` 声明前加 `const` 会生成不可外部调参的常量/helper 节点：
+
+```c
+Properties = {
+    const float PreviewStrength = 1.0;
+    const Texture2D PreviewTex;
+}
 ```
 
 属性块按 Unreal `MaterialExpression` 的 UPROPERTY 名称反射写入节点；不写的字段保持 Unreal 默认值。

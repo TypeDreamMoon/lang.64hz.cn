@@ -5,6 +5,14 @@ description: DreamShader 插件版本更新记录。
 
 DreamShader 的版本更新记录按插件版本整理。这里主要记录会影响使用者的语言、生成器、工作流和兼容性变化。
 
+## 1.2.6 - 2026-04-30
+
+### ShaderFunction Properties
+
+- `ShaderFunction` 新增 `Properties` section，用于声明只属于生成材质函数内部的 property/helper 节点。
+- `Properties` 支持 `const` 标记，可生成不可外部调参的标量、向量或 Texture Object helper 节点。
+- `ShaderFunction` 的 `Inputs` 预览默认值可以引用同一函数的 `Properties`，例如 `opt Texture2D BaseColorTex = PreviewTex;`。
+
 ## 1.2.5 - 2026-04-30
 
 ### MaterialAttributes

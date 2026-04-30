@@ -86,18 +86,20 @@ Shader(Name="DreamMaterials/M_Minimal")
 
 | 项目 | 内容 |
 | --- | --- |
-| DreamShader 插件 | `1.2.5` |
-| VSCode 扩展 | `1.2.24` |
+| DreamShader 插件 | `1.2.6` |
+| VSCode 扩展 | `1.2.25` |
 | 文档站 | `lang.64hz.cn` |
 | 语言 | `DreamShaderLang` |
 | 文件扩展名 | `.dsm` / `.dsh` |
 | 作者 | TypeDreamMoon |
 | 主要产物 | `UMaterial` / `UMaterialFunction` |
 
-## 1.2.5 重点
+## 1.2.6 重点
 
 | 能力 | 说明 |
 | --- | --- |
+| ShaderFunction Properties | `ShaderFunction` 可声明 `Properties`，供 Graph 和 Inputs 预览默认值引用。 |
+| const helper | `const float` / `const Texture2D` 等 Properties 会生成不可外部调参的常量或 Texture Object helper 节点。 |
 | MaterialAttributes | `ShaderFunction` / `VirtualFunction` 可声明 `MaterialAttributes` 输出，`Shader` 可绑定 `Base.MaterialAttributes`。 |
 | 成员写入 | `Graph` 支持 `Attrs.BaseColor = ...`、`Attrs.Roughness = ...` 这类结构体式写法。 |
 | VSCode 支持 | 扩展补全和诊断支持 `MaterialAttributes` 类型、成员补全和 `Base.MaterialAttributes` 输出绑定。 |
