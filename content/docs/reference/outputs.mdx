@@ -37,6 +37,7 @@ Graph = {
 | --- | --- |
 | `Base.BaseColor` | `float3` |
 | `Base.EmissiveColor` / `Base.Emissive` | `float3` |
+| `Base.MaterialAttributes` / `Base.Attributes` | `MaterialAttributes` |
 | `Base.Opacity` | `float1` |
 | `Base.OpacityMask` | `float1` |
 | `Base.Metallic` | `float1` |
@@ -52,11 +53,18 @@ Graph = {
 | `Base.ClearCoatRoughness` | `float1` |
 | `Base.CustomData0` | `float1` |
 | `Base.CustomData1` | `float1` |
+| `Base.DiffuseColor` | `float3` |
+| `Base.SpecularColor` | `float3` |
+| `Base.SurfaceThickness` | `float1` |
+| `Base.Displacement` | `float1` |
 | `Base.Anisotropy` | `float1` |
 | `Base.Tangent` | `float3` |
 | `Base.CustomizedUV0` 到 `Base.CustomizedUV7` | `float2` |
+| `Base.CustomizedUVs0` 到 `Base.CustomizedUVs7` | `float2` |
 
 如果声明类型和目标类型不兼容，生成器会报错。
+
+`Base.MooaEncodedAttribute0` 到 `Base.MooaEncodedAttribute4` 是 Moon Engine 编译目标下的扩展输出，类型为 `float4`。普通 Unreal 构建不会启用这些自定义材质属性。
 
 ## 表达式输出节点
 

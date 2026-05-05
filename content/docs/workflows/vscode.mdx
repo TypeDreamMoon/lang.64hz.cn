@@ -9,7 +9,7 @@ DreamShaderLang 的 VSCode 扩展让 `.dsm` / `.dsh` 的编辑体验接近常见
 
 [https://github.com/TypeDreamMoon/dreamshader-language-support](https://github.com/TypeDreamMoon/dreamshader-language-support)
 
-当前扩展版本：`1.2.25`。版本记录见 [VSCode 扩展 ChangeLog](../changelog/vscode-extension.mdx)。
+当前扩展版本：`1.2.26`。版本记录见 [VSCode 扩展 ChangeLog](../changelog/vscode-extension.mdx)。
 
 ## 能力概览
 
@@ -58,7 +58,7 @@ DreamShaderLang 的 VSCode 扩展让 `.dsm` / `.dsh` 的编辑体验接近常见
 | `VirtualFunction` 缺失项 | 缺少 `Options.Asset` 或 `Outputs`。 |
 | `default` 参数错误 | 非可选函数输入使用了 `default`。 |
 | 参数反射属性错误 | `SortPriority` 不是整数，或反射属性不能写入对应 Unreal 节点。 |
-| `Path(...)` 错误 | 纹理默认资产路径不合法。 |
+| `Path(...)` 错误 | 纹理默认资产路径或 `UE.CollectionParam(Collection=Path(...))` 写法不合法。 |
 
 ## Unreal 桥接诊断
 

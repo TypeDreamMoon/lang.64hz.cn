@@ -86,18 +86,23 @@ Shader(Name="DreamMaterials/M_Minimal")
 
 | 项目 | 内容 |
 | --- | --- |
-| DreamShader 插件 | `1.2.6` |
-| VSCode 扩展 | `1.2.25` |
+| DreamShader 插件 | `1.2.8` |
+| VSCode 扩展 | `1.2.26` |
 | 文档站 | `lang.64hz.cn` |
 | 语言 | `DreamShaderLang` |
 | 文件扩展名 | `.dsm` / `.dsh` |
 | 作者 | TypeDreamMoon |
 | 主要产物 | `UMaterial` / `UMaterialFunction` |
 
-## 1.2.6 重点
+## 1.2.8 / 1.2.26 重点
 
 | 能力 | 说明 |
 | --- | --- |
+| Project Settings | 插件设置入口调整为 `Project Settings > DreamPlugin > Dream Shader`。 |
+| VSCode 窗口行为 | `OpenInNewWindow` 控制从 Unreal 打开 DreamShader workspace 时新开 VSCode 窗口或复用已有窗口。 |
+| 引擎兼容性 | 插件 `1.2.7` 补齐新版 Unreal 材质函数输入输出节点依赖，并把 Moon Engine 专属输出改为条件编译。 |
+| 输出诊断同步 | VSCode `1.2.26` 本地诊断同步插件支持的 `Base.*` 输出，包括 `CustomizedUVs` 别名、旧版 Color 输出、`SurfaceThickness`、`Displacement` 和 Mooa 输出。 |
+| MPC 诊断修正 | `UE.CollectionParam(Collection=Path(...), Parameter="Name")` 中的 `Path(...)` helper 不再被 VSCode 本地诊断误报为未知函数。 |
 | ShaderFunction Properties | `ShaderFunction` 可声明 `Properties`，供 Graph 和 Inputs 预览默认值引用。 |
 | const helper | `const float` / `const Texture2D` 等 Properties 会生成不可外部调参的常量或 Texture Object helper 节点。 |
 | MaterialAttributes | `ShaderFunction` / `VirtualFunction` 可声明 `MaterialAttributes` 输出，`Shader` 可绑定 `Base.MaterialAttributes`。 |

@@ -5,6 +5,24 @@ description: DreamShader 插件版本更新记录。
 
 DreamShader 的版本更新记录按插件版本整理。这里主要记录会影响使用者的语言、生成器、工作流和兼容性变化。
 
+## 1.2.8 - 2026-05-05
+
+### 项目设置与编辑器入口
+
+- 插件版本更新到 `1.2.8`。
+- `DreamShader.uplugin` 的文档链接改为 `https://lang.64hz.cn/`，支持链接改为 GitHub 主页。
+- Unreal Project Settings 中的插件分类从 `Plugins` 调整到 `DreamPlugin`，section 显示名为 `Dream Shader`，说明文本为 `Dream Shader Settings`。
+- 新增 `Editor` 分类下的 `OpenInNewWindow` 配置。默认开启时，从 Unreal 打开 DreamShader VSCode workspace 会新开窗口；关闭时会追加 `--reuse-window`，复用已有 VSCode 窗口。
+
+## 1.2.7 - 2026-05-05
+
+### Unreal 5.7 兼容性
+
+- 插件版本更新到 `1.2.7`。
+- 生成器补齐 `UMaterialExpressionFunctionInput` / `UMaterialExpressionFunctionOutput` 相关头文件依赖，适配新版 Unreal 材质函数输入输出节点的编译环境。
+- Moon Engine 专属的 `MooaEncodedAttribute0` 到 `MooaEncodedAttribute4` 输出现在包在 `MOON_ENGINE` 条件编译内，普通引擎构建不会再依赖这些自定义材质属性。
+- 该版本不改变 `.dsm` / `.dsh` 语法；主要是输出目标和引擎兼容性修正。
+
 ## 1.2.6 - 2026-04-30
 
 ### ShaderFunction Properties

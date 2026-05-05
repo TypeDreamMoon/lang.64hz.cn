@@ -9,6 +9,14 @@ description: DreamShaderLang VSCode 扩展版本更新记录。
 
 [https://github.com/TypeDreamMoon/dreamshader-language-support](https://github.com/TypeDreamMoon/dreamshader-language-support)
 
+## 1.2.26 - 2026-05-04
+
+### 输出诊断同步
+
+- 扩展版本更新到 `1.2.26`。
+- 本地材质输出诊断同步 DreamShader 插件当前支持的 `Base.*` 输出，覆盖 `Base.CustomizedUV0..7`、`Base.CustomizedUVs0..7`、Custom Data、旧版 Color、`Displacement`、`SurfaceThickness` 和 Moon Engine 编译目标下的 `MooaEncodedAttribute0..4`。
+- 表达式诊断现在接受 `UE.CollectionParam(Collection=Path(...), ...)` 中的 `Path(...)` helper，不再把它误报为未知函数。
+
 ## 1.2.25 - 2026-04-30
 
 ### ShaderFunction Properties
