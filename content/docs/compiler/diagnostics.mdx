@@ -33,7 +33,7 @@ DShader/Shared/Common.dsh:12:5
 | `Shader must provide a Graph block` | `Shader` 没有 `Graph`。 | 添加 `Graph = { ... }`。 |
 | `Unknown shader section` | `Shader` 中写了不支持的 section。 | 使用 `Properties` / `Settings` / `Outputs` / `Graph`。 |
 | `Shader graph sections now use Graph` | 还在 `Shader` 里使用 `Code`。 | 改为 `Graph`。 |
-| `Namespace may only contain Function blocks` | namespace 里放了其他顶层块。 | 只保留 `Function`。 |
+| `Namespace may only contain Function or GraphFunction blocks` | namespace 里放了其他顶层块。 | 只保留 `Function` / `GraphFunction`。 |
 
 ## 常见 Graph 错误
 
@@ -53,10 +53,11 @@ DShader/Shared/Common.dsh:12:5
 
 | 错误 | 原因 | 正确写法 |
 | --- | --- | --- |
-| `must be called with explicit out variables` | 把 `Function` 当返回值函数。 | `ApplyTint(a, b, result);` |
+| `must be called with explicit out variables` | 多输出 `Function` / `GraphFunction` 被当作单值表达式。 | `ApplyTint(a, b, result);` |
 | `currently uses positional arguments only` | 使用了命名参数。 | `Fn(a, b, outValue);` |
 | `out argument must be a plain variable name` | `out` 位置传了表达式。 | 先声明变量再传入。 |
 | `expects N arguments` | 输入和输出目标数量不对。 | 参数数量必须等于 `in` 加 `out`。 |
+| `UE.* calls are not allowed in Function` | 普通 `Function` 体内调用了图节点入口。 | 改用 `GraphFunction`。 |
 
 ## UE builtin 错误
 
@@ -70,7 +71,15 @@ DShader/Shared/Common.dsh:12:5
 | `UE.CollectionParam requires Collection=Path(...)` | MPC 读取缺少 Collection。 | 写 `Collection=Path(Game, "Collections/MPC_Name")`。 |
 | `UE.CollectionParam collection ... does not contain parameter ...` | 指定的 MPC 中没有该参数。 | 检查 Material Parameter Collection 里的参数名。 |
 
-VSCode 扩展 `1.2.26` 起，`UE.CollectionParam(Collection=Path(...), ...)` 中的 `Path(...)` 会被当作 DreamShader helper 处理，不再误报 `Unknown function 'Path'`。
+VSCode 扩展 `1.2.26` 起，`UE.CollectionParam(Collection=Path(...), ...)` 中的 `Path(...)` 会被当作 DreamShader helper 处理，不再误报 `Unknown function 'Path'`。扩展 `1.4.0` 起，本地诊断改由新的 parser-based language core 提供，能更稳定地区分 `Inputs`、`Graph`、`Function`、`Settings`、`Outputs` 和 metadata context。
+
+## Material Layer 错误
+
+| 错误 | 原因 | 处理 |
+| --- | --- | --- |
+| `ShaderLayer must output exactly one MaterialAttributes value` | `ShaderLayer` 输出缺失、过多或类型不是 `MaterialAttributes`。 | 只声明一个 `MaterialAttributes` 输出。 |
+| `ShaderLayerBlend must declare at least two MaterialAttributes inputs` | Layer Blend 输入不满足原生 Layer Blend 形状。 | 至少声明两个 `MaterialAttributes` 输入。 |
+| `MaterialLayer is deprecated` | 使用了旧兼容关键字。 | 改为 `ShaderLayer` / `ShaderLayerBlend`。 |
 
 ## 材质输出错误
 

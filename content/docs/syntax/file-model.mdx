@@ -35,12 +35,15 @@ Shader(Name="DreamMaterials/M_Example")
 | --- | --- |
 | `Shader` | 推荐。 |
 | `ShaderFunction` | 推荐，可放在独立 `.dsm`。 |
+| `ShaderLayer` | 推荐，可放在独立 `.dsm`。 |
+| `ShaderLayerBlend` | 推荐，可放在独立 `.dsm`。 |
 | `VirtualFunction` | 可以，用于声明已有材质函数资产。 |
 | `Function` | 可以，但复用逻辑更推荐放 `.dsh`。 |
+| `GraphFunction` | 可以，但复用逻辑更推荐放 `.dsh`。 |
 | `Namespace` | 可以，但共享 namespace 更推荐放 `.dsh`。 |
 | `import` | 推荐，用于引入 `.dsh` 或 Package。 |
 
-当前一个 `.dsm` 中只支持一个顶层 `Shader`。同一个文件可以同时声明共享 `Function` 和 `ShaderFunction`，但从维护性看，建议按资产拆文件。
+当前一个 `.dsm` 中只建议放一个主要生成资产声明，例如一个 `Shader`、`ShaderFunction`、`ShaderLayer` 或 `ShaderLayerBlend`。同一个文件可以同时声明共享 helper，但从维护性看，建议按资产拆文件。
 
 ## `.dsh`
 
@@ -63,6 +66,7 @@ Namespace(Name="Color")
 | --- | --- |
 | `import` | 复用其他 header 或 Package。 |
 | `Function` | 无 namespace 的共享 helper。 |
+| `GraphFunction` | 可复用 Custom 节点 helper，函数体中可使用 `UE.*` 图节点。 |
 | `Namespace` | 一组 helper。 |
 | `VirtualFunction` | 只声明已有 `UMaterialFunction` 签名，不直接生成资产。 |
 
@@ -76,12 +80,15 @@ Namespace(Name="Color")
 import "..."
 Shader(Name="...") { ... }
 ShaderFunction(Name="...") { ... }
+ShaderLayer(Name="...") { ... }
+ShaderLayerBlend(Name="...") { ... }
 VirtualFunction(Name="...") { ... }
 Function [SelfContained|Inline] Name(...) { ... }
+GraphFunction [SelfContained|Inline] Name(...) { ... }
 Namespace(Name="...") { Function ... }
 ```
 
-`Shader` 和 `ShaderFunction` 使用属性列表：
+`Shader`、`ShaderFunction`、`ShaderLayer` 和 `ShaderLayerBlend` 使用属性列表：
 
 ```c
 Shader(Name="DreamMaterials/M_Name")
@@ -119,8 +126,11 @@ Function Remap01(in float value, out float result) {
 ```c
 Shader
 ShaderFunction
+ShaderLayer
+ShaderLayerBlend
 VirtualFunction
 Function
+GraphFunction
 Namespace
 Properties
 Settings

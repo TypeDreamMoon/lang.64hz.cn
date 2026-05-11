@@ -1,9 +1,14 @@
 ---
 title: Function 与 helper
-description: HLSL 风格 helper 的声明、调用、输出和自包含模式。
+description: HLSL 风格 helper、GraphFunction、输出和自包含模式。
 ---
 
-`Function` 是 DreamShaderLang 的 helper 层。它让复杂计算留在 HLSL 风格代码里，而不是强行把所有逻辑展开成 Graph 节点。
+`Function` 和 `GraphFunction` 是 DreamShaderLang 的 helper 层。它们让复杂计算留在 HLSL 风格代码里，而不是强行把所有逻辑展开成 Graph 节点。
+
+| helper | 适合 |
+| --- | --- |
+| `Function` | 纯 HLSL 风格 Custom 节点逻辑。 |
+| `GraphFunction` | 需要在 helper 体内调用 `UE.*` 图节点，再把结果传入 Custom 节点的逻辑。 |
 
 ## 基本声明
 
@@ -28,6 +33,16 @@ out Type name
 
 至少需要一个 `out` 参数。
 
+单输出 `Function` 可以作为 Graph 值表达式使用：
+
+```c
+Graph = {
+    vec3 tinted = ApplyTint(baseColor, tint);
+}
+```
+
+多输出 `Function` 仍然需要显式传 `out` 变量。
+
 ## 多输出
 
 ```c
@@ -50,6 +65,37 @@ Graph = {
 
 DreamShader 会为第一个 `out` 创建 Custom 节点主输出，为后续 `out` 创建 Additional Output。
 
+## GraphFunction
+
+`GraphFunction` 同样生成 Custom 节点，但函数体里可以直接写 `UE.*` 调用。DreamShader 会把这些 `UE.*` 调用转换成材质节点，并把节点输出作为自动生成的 Custom 输入。
+
+```c
+GraphFunction BuildPulse(in float scale, out float result) {
+    float t = UE.Time();
+    result = sin(t * scale);
+}
+```
+
+调用方式：
+
+```c
+Graph = {
+    float pulse = BuildPulse(2.0);
+}
+```
+
+规则：
+
+| 规则 | 说明 |
+| --- | --- |
+| `UE.*` | 允许在 `GraphFunction` 体内使用。 |
+| 普通 HLSL | 可以继续使用 `sin`、`saturate`、循环等 HLSL 写法。 |
+| 单输出 | 可作为值表达式。 |
+| 多输出 | 必须显式传 `out` 变量。 |
+| 递归 | 会进行递归调用检测。 |
+
+普通 `Function` 体内不允许直接调用 `UE.*`。如果需要图节点输入，改用 `GraphFunction`。
+
 ## 纹理参数
 
 ```c
@@ -65,7 +111,7 @@ Namespace(Name="Texture")
 
 ## 普通函数与自包含函数
 
-普通函数：
+普通 helper：
 
 ```c
 Function Remap01(in float value, out float result) {
@@ -81,7 +127,7 @@ Function Remap01(in float value, out float result) {
 | Custom 节点 | 通过 include 调用生成的函数符号。 |
 | 适合 | 当前项目持续使用 DreamShader。 |
 
-自包含函数：
+自包含 helper：
 
 ```c
 Function SelfContained Remap01(in float value, out float result) {
@@ -124,12 +170,24 @@ Color::ApplyTint(BaseColor, Tint, ColorOut);
 
 命名空间函数在内部会被转换成安全符号，避免 HLSL 里直接使用 `::`。
 
+命名空间中也可以声明 `GraphFunction`：
+
+```c
+Namespace(Name="Time")
+{
+    GraphFunction Pulse(in float speed, out float value) {
+        value = sin(UE.Time() * speed);
+    }
+}
+```
+
 ## 设计建议
 
 | 场景 | 建议 |
 | --- | --- |
 | 简单节点连接 | 写在 `Graph`。 |
 | 多处复用公式 | 写成 `Function`。 |
+| helper 内需要 `UE.*` 节点 | 写成 `GraphFunction`。 |
 | 循环和复杂流程 | 写成 `Function`。 |
 | 面向团队共享 | 放进 `.dsh` 或 Package。 |
 | 命名可能冲突 | 放进 `Namespace`。 |
@@ -141,4 +199,5 @@ Color::ApplyTint(BaseColor, Tint, ColorOut);
 | `Function ... must declare at least one out parameter` | 没有声明 `out` 参数。 |
 | `currently uses positional arguments only` | 普通 `Function` 调用使用了命名参数。 |
 | `out argument must be a plain variable name` | `out` 位置传了表达式，而不是变量名。 |
-| `must be called with explicit out variables` | 把 `Function` 当返回值函数使用。 |
+| `must be called with explicit out variables` | 多输出 `Function` / `GraphFunction` 被当作单值表达式使用。 |
+| `UE.* calls are not allowed in Function` | 普通 `Function` 体内调用了图节点入口，应改用 `GraphFunction`。 |

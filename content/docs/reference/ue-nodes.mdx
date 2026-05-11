@@ -3,7 +3,7 @@ title: UE 节点入口参考
 description: Graph 与 Properties 中可用的 UE.* 材质节点创建入口。
 ---
 
-`UE.*` 是 DreamShaderLang 创建 Unreal MaterialExpression 的入口。它可以在 `Graph` 表达式中使用，也可以在 `Properties` 中声明为预置节点。
+`UE.*` 是 DreamShaderLang 创建 Unreal MaterialExpression 的入口。它可以在 `Graph` 表达式中使用，也可以在 `GraphFunction` 体内使用，还可以在 `Properties` 中声明为预置节点。
 
 这些入口和 `.dsh` 共享库无关。即使项目没有内置库文件，`UE.*` 仍然是语言层的节点创建语法。
 
@@ -110,6 +110,16 @@ Tangent, Local, World, View, Camera, Instance
 ```text
 Local, World, PeriodicWorld, TranslatedWorld, FirstPerson, View, Camera, Instance
 ```
+
+## 动态 MaterialExpression 元数据
+
+DreamShader 插件会在编辑器桥接目录导出 reflected MaterialExpression manifest：
+
+```text
+Saved/DreamShader/Bridge/material-expressions.json
+```
+
+VSCode 扩展会读取这个文件，把当前引擎和项目可见的 `UMaterialExpression` 类、可编辑属性、输入 pin、输出 pin 和 DreamShader 输出类型提示合并进补全、Hover 和 Signature Help。手写的稳定 `UE.*` 元数据仍作为覆盖项保留。
 
 ## 泛型 `UE.Expression`
 

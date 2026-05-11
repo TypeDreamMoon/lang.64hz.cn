@@ -1,6 +1,6 @@
 ---
 title: 顶层声明
-description: Shader、ShaderFunction、VirtualFunction、Function 和 Namespace 的完整结构。
+description: Shader、ShaderFunction、ShaderLayer、VirtualFunction、Function、GraphFunction 和 Namespace 的完整结构。
 ---
 
 顶层声明决定当前文件生成什么、暴露什么、复用什么。
@@ -91,6 +91,56 @@ ShaderFunction(Name="Functions/F_Tint", Root="Plugin.MyPlugin")
 
 输入声明前可加 `opt`，表示该输入可以使用 Unreal FunctionInput 的预览默认值。调用时可以传 `default` 或省略尾部可选输入。
 
+## `ShaderLayer` 与 `ShaderLayerBlend`
+
+`ShaderLayer` 生成 Unreal 原生 `UMaterialFunctionMaterialLayer`，`ShaderLayerBlend` 生成 `UMaterialFunctionMaterialLayerBlend`。两者复用 `ShaderFunction` 的 `Properties`、`Inputs`、`Outputs`、`Settings` 和 `Graph` sections。
+
+```c
+ShaderLayer(Name="Layers/L_SimpleSurface", Root="Game")
+{
+    Outputs = {
+        MaterialAttributes Attrs;
+    }
+
+    Graph = {
+        Attrs.BaseColor = vec3(0.8, 0.2, 0.1);
+        Attrs.Roughness = 0.5;
+    }
+}
+```
+
+`ShaderLayerBlend` 示例：
+
+```c
+ShaderLayerBlend(Name="Layers/L_BlendByMask")
+{
+    Inputs = {
+        MaterialAttributes BaseLayer;
+        MaterialAttributes TopLayer;
+        float Mask;
+    }
+
+    Outputs = {
+        MaterialAttributes Result;
+    }
+
+    Graph = {
+        Result.BaseColor = lerp(BaseLayer.BaseColor, TopLayer.BaseColor, Mask);
+        Result.Roughness = lerp(BaseLayer.Roughness, TopLayer.Roughness, Mask);
+    }
+}
+```
+
+规则：
+
+| 项目 | 规则 |
+| --- | --- |
+| `Name` | 必填，生成 Layer Function 资产路径。 |
+| `Root` | 可选，规则同 `Shader`。 |
+| `Outputs` | 必须声明且只声明一个 `MaterialAttributes` 输出。 |
+| `ShaderLayerBlend.Inputs` | 至少声明两个 `MaterialAttributes` 输入。 |
+| `MaterialLayer` / `MaterialLayerBlend` | 旧兼容写法，仍可解析但会产生废弃警告；新源码应使用 `ShaderLayer` / `ShaderLayerBlend`。 |
+
 ## `VirtualFunction`
 
 `VirtualFunction` 声明一个已经存在的 Unreal `UMaterialFunction`，让 `Graph` 可以像调用 `ShaderFunction` 一样调用它。它只描述签名和资产引用，不生成、不保存、不覆盖对应资产。
@@ -172,16 +222,46 @@ Graph = {
 }
 ```
 
-DreamShaderLang 的 `Function` 不支持返回值风格调用：
+单输出 `Function` 可以作为 Graph 值表达式使用：
 
 ```c
-// 不支持
-float value = GetPair(2.0);
+Graph = {
+    float value = Remap01(2.0);
+}
 ```
+
+多输出 `Function` 仍必须使用显式 `out` 变量调用。
+
+## `GraphFunction`
+
+`GraphFunction` 定义可复用 Custom 节点 helper。它的函数体仍按 HLSL 风格书写，但允许调用 `UE.*` 图节点。DreamShader 会先创建对应 Unreal 材质节点，再把节点输出作为自动输入 pin 接入 Custom 节点。
+
+```c
+GraphFunction BuildPulse(in float scale, out float result) {
+    float t = UE.Time();
+    result = sin(t * scale);
+}
+```
+
+调用规则与 `Function` 相同：
+
+```c
+Graph = {
+    float pulse = BuildPulse(2.0);
+}
+```
+
+| 项目 | 规则 |
+| --- | --- |
+| 参数 | 使用 `in` / `out`。 |
+| 单输出 | 可以作为值表达式使用。 |
+| 多输出 | 必须传显式 `out` 变量。 |
+| `UE.*` | 允许在 `GraphFunction` 体内使用，不允许在普通 `Function` 体内使用。 |
+| 递归 | 会进行递归调用检测。 |
 
 ## `SelfContained` 与 `Inline`
 
-普通 `Function` 会生成 `.ush` include，并由 Custom 节点引用。
+普通 `Function` / `GraphFunction` 会生成 `.ush` include，并由 Custom 节点引用。
 
 ```c
 Function Remap01(in float value, out float result) {
@@ -189,7 +269,7 @@ Function Remap01(in float value, out float result) {
 }
 ```
 
-自包含函数会把依赖代码嵌入 Custom 节点：
+自包含 helper 会把依赖代码嵌入 Custom 节点：
 
 ```c
 Function SelfContained Remap01(in float value, out float result) {
@@ -209,12 +289,12 @@ Function Inline Remap01(in float value, out float result) {
 
 | 模式 | 适合 |
 | --- | --- |
-| 普通 `Function` | 项目内持续使用 DreamShader，代码集中生成到 `.ush`。 |
+| 普通 `Function` / `GraphFunction` | 项目内持续使用 DreamShader，代码集中生成到 `.ush`。 |
 | `SelfContained` / `Inline` | 需要把生成资产交给未安装 DreamShader 的项目使用。 |
 
 ## `Namespace`
 
-`Namespace` 用来组织一组 `Function`。
+`Namespace` 用来组织一组 `Function` 或 `GraphFunction`。
 
 ```c
 Namespace(Name="Texture")
@@ -240,6 +320,6 @@ Graph = {
 | 项目 | 规则 |
 | --- | --- |
 | `Name` | 必填，必须是合法标识符。 |
-| 内容 | 当前只能包含 `Function`。 |
+| 内容 | 可以包含 `Function` 和 `GraphFunction`。 |
 | 调用 | 使用 `NamespaceName::FunctionName(...)`。 |
 | 生成 | 内部会映射为安全的 HLSL 符号名，避免原生 `::` 问题。 |

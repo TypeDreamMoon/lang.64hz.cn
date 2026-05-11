@@ -9,6 +9,57 @@ description: DreamShaderLang VSCode 扩展版本更新记录。
 
 [https://github.com/TypeDreamMoon/dreamshader-language-support](https://github.com/TypeDreamMoon/dreamshader-language-support)
 
+## 1.4.0 - 2026-05-10
+
+### Parser-based 语言服务
+
+- 扩展版本更新到 `1.4.0`。
+- 使用 scanner、parser、context、symbol、completion、diagnostic 和 provider 模块重写 DreamShaderLang 语言服务核心。
+- completion、diagnostics、semantic tokens、folding 和 document symbols 改走新的 language core。
+- 修复 `Inputs`、`Graph`、`Function`、`Settings`、`Outputs` 和 metadata context 之间的大范围补全作用域串漏。
+- 修复 `Base.` 输出补全，应用 `BaseColor` 时不再插入 `Base.BaseColor`。
+- 新增 parser-based formatting、跨文件 import indexing 和函数循环检测。
+- 恢复更深层本地诊断，覆盖 ShaderLayer / ShaderLayerBlend 形状、VirtualFunction options、Graph callable 参数数量、Graph out 变量和 MaterialAttributes 成员写入。
+- 新增 Substrate / Strata 类型、语法、补全和诊断提示。
+- 新增 section-aware completion 和 diagnostics 的 language smoke tests。
+- README 改为英文主文档，并新增 `README.zh-CN.md`。
+
+## 1.3.4 - 2026-05-10
+
+### 模板与 Material Layer 关键字
+
+- 更新内置模板和 snippets，生成更实用的项目级 DreamShader 骨架。
+- Material Layer 语言支持和模板切换到推荐关键字 `ShaderLayer` / `ShaderLayerBlend`。
+- 从 active keyword、syntax、completion、diagnostic 和 CodeLens 路径中移除 `MaterialLayer` / `MaterialLayerBlend`。
+
+## 1.3.1 - 1.3.2 - 2026-05-09
+
+### GraphFunction
+
+- 新增 `GraphFunction` 语言支持，用于可调用 `UE.*` 节点并在调用点展开的复用 graph-node helper。
+- 单输出 `Function` 和 `GraphFunction` 调用可作为 Graph 值表达式参与本地诊断。
+- 多输出 `Function` 和 `GraphFunction` 仍使用显式 out 变量语法。
+- 顶层 block 模板拆分到 `templates.js`；关键字补全只插入关键字，`ShaderFunctionTemplate`、`GraphFunctionTemplate` 等条目展开完整模板。
+- 新增 GraphFunction snippet、completion、hover、signature help、symbols、folding 和本地诊断。
+- 新增本地诊断：普通 HLSL `Function` block 内调用 `UE.*` graph node 时提示改用 `GraphFunction`。
+
+## 1.3.0 - 2026-05-08
+
+### Material Layer
+
+- 新增 `MaterialLayer` 和 `MaterialLayerBlend` 语言支持、snippets、semantic tokens、folding、symbols、CodeLens、completion、hover、signature help 和本地诊断。
+- 新增 Material Layer 输出形状和 Material Layer Blend `MaterialAttributes` 输入验证。
+- `.dsm` / `.dsh` 诊断识别生成的 Material Layer 资产。
+- Material Layer snippets 改用显式 `.rgb` 访问，让 alpha 仍可通过 `.a` 读取。
+
+## 1.2.27 - 2026-05-08
+
+### Dynamic MaterialExpression Metadata
+
+- 新增来自 `Saved/DreamShader/Bridge/material-expressions.json` 的动态 `MaterialExpression` completion、hover 和 signature metadata。
+- 新增泛型 `UE.Expression(...)` 的 `Class="..."` 值补全，以及 shader output `Expression(...).Pin[n]` binding 补全。
+- 保留手写 UE builtin metadata 作为稳定覆盖项，同时合并 Unreal 反射 expression metadata。
+
 ## 1.2.26 - 2026-05-04
 
 ### 输出诊断同步

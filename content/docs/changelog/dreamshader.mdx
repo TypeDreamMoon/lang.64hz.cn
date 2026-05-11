@@ -5,6 +5,49 @@ description: DreamShader 插件版本更新记录。
 
 DreamShader 的版本更新记录按插件版本整理。这里主要记录会影响使用者的语言、生成器、工作流和兼容性变化。
 
+## 1.3.2 - 2026-05-11
+
+### Material Function Generation
+
+- 插件版本更新到 `1.3.2`。
+- 重新生成 `ShaderFunction` 时保留生成输入和输出 ID，普通 Unreal 材质中的既有 `MaterialFunctionCall` 节点会尽量保持连接。
+- Graph 和 Custom/HLSL 生成路径会跳过未使用的生成 property 节点。
+- 改进生成节点摆放，并避免对 DreamShader 生成的材质图执行 Unreal 全量自动布局。
+- 修复重新生成已打开 Material Function 资产时，编辑器仍持有 expression root 导致的崩溃。
+
+## 1.3.1 - 2026-05-09
+
+### Function Calls
+
+- 单输出 `Function` 和 `GraphFunction` 调用现在可以作为值表达式使用，例如 `Color = Texture::Sample2DRGB(BaseTex, UV0);`。
+- 多输出 `Function` 和 `GraphFunction` 仍然需要显式 out 变量，例如 `Texture::Sample2D(BaseTex, UV0, Color, Alpha);`。
+
+### Graph Functions
+
+- 新增顶层和 namespaced `GraphFunction` block，用于复用 HLSL Custom 节点逻辑。
+- `GraphFunction` 仍按 HLSL 风格书写，但 body 中的 `UE.*` 调用会转换成材质节点，并作为生成输入传入 Custom 节点。
+- 新增 GraphFunction 参数验证、递归调用检测和显式 out 变量写回。
+
+## 1.3.0 - 2026-05-08
+
+### Shader Layer Functions
+
+- 新增顶层 `ShaderLayer(Name="...", Root="...")` 和 `ShaderLayerBlend(Name="...", Root="...")`。
+- 生成的 layer 资产使用 Unreal 原生 `UMaterialFunctionMaterialLayer` / `UMaterialFunctionMaterialLayerBlend` 类。
+- `MaterialLayer` / `MaterialLayerBlend` 保留为兼容别名并产生警告；新源码应使用 `ShaderLayer` / `ShaderLayerBlend`。
+- `ShaderLayer` / `ShaderLayerBlend` 复用现有 `Properties`、`Inputs`、`Outputs`、`Settings` 和 `Graph` sections。
+- 新增验证：Shader Layer block 必须输出且只输出一个 `MaterialAttributes`，Shader Layer Blend block 必须声明至少两个 `MaterialAttributes` 输入。
+- Vector parameter property 在 Graph 中保留 RGBA 输出，`.a` / `.w` 可读取 alpha，低分量赋值会自动取前置通道。
+
+## 1.2.10 - 2026-05-08
+
+### VSCode MaterialExpression Manifest
+
+- 新增编辑器侧 reflected `UMaterialExpression` metadata 导出，路径为 `Saved/DreamShader/Bridge/material-expressions.json`。
+- manifest 会在编辑器 bridge 启动和打开 DreamShader VSCode workspace 时刷新。
+- 导出内容包含 expression class 名称、可编辑反射属性、expression inputs、output pins 和推断的 DreamShader `OutputType` 提示。
+- Release workflow 会下载最新 `dreamshader-language-support` GitHub Release 资产并附加到 DreamShader release。
+
 ## 1.2.8 - 2026-05-05
 
 ### 项目设置与编辑器入口
